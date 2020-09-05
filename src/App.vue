@@ -1,18 +1,27 @@
-<template>
+<template id="tempo">
   <div id="app">
     <form class="margin40" name="form1" v-on:submit.prevent="onSubmit">
       <div class="form-group text-align col-12">
-        <label for="input1" class="row justify-content-center">TRY TO SEARCH MOVIE</label>
+        <label for="input1" class="row justify-content-center text-title">TRY TO SEARCH MOVIE</label>
       </div>
       <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-5">
+        <div class="form-row justify-content-center">
+          <div class="col-4">
             <input
-              v-model="items"
+              v-model="titles"
               type="text"
               id="input1"
-              class="form-control"
-              placeholder="Enter movie title"
+              class="form-control text-center"
+              placeholder="title"
+            />
+          </div>
+          <div class="col-3">
+            <input
+              v-model="years"
+              type="text"
+              id="input1"
+              class="form-control text-center"
+              placeholder="year"
             />
           </div>
           <div class>
@@ -21,37 +30,41 @@
         </div>
       </div>
     </form>
-
-    <div class="media">
-      <img src class="align-self-start mr-3 col-sm-2" alt />
+    <h1
+      v-show="q=!q"
+      class="media-body justify-content-center text-center"
+      v-if="!dataM.Title"
+    >comin soon...maybe</h1>
+    <div class="media text-values">
+      <img :src="dataM.Poster" class="align-self-start mr-3 col-xs col-sm-0" alt />
 
       <div class="media-body">
         <h1 class="mt-0" v-bind="dataM">{{dataM.Title}}</h1>
         <dl class="row media-values">
-          <dt class="col-sm-3 con-sm-1">
-            <p>Year</p>
+          <dt class="col-sm-1 con-sm-1" v-if="dataM.Title">
             <p>Type</p>
-            <p>Genre</p>
-            <p>Runtime</p>
-            <p>Released</p>
-            <p>DVD</p>
             <p>Director</p>
             <p>Writer</p>
             <p>Actors</p>
+            <p>Genre</p>
+            <p>Year</p>
+            <p>Runtime</p>
+            <p>Released</p>
+            <p>DVD</p>
             <p>Rated</p>
             <p>Metascore</p>
-            <p>IMDB_Rating</p>
+            <p>IMDB_Rate</p>
           </dt>
-          <dd class="col-sm-9 row-sm-1" v-bind="dataM">
-            <p>{{dataM.Year}}</p>
+          <dd class="col-sm-10 row-sm-1" v-bind="dataM">
             <p>{{dataM.Type}}</p>
-            <p>{{dataM.Genre}}</p>
-            <p>{{dataM.Runtime}}</p>
-            <p>{{dataM.Released}}</p>
-            <p>{{dataM.DVD}}</p>
             <p>{{dataM.Director}}</p>
             <p>{{dataM.Writer}}</p>
             <p>{{dataM.Actors}}</p>
+            <p>{{dataM.Genre}}</p>
+            <p>{{dataM.Year}}</p>
+            <p>{{dataM.Runtime}}</p>
+            <p>{{dataM.Released}}</p>
+            <p>{{dataM.DVD}}</p>
             <p>{{dataM.Rated}}</p>
             <p>{{dataM.Metascore}}</p>
             <p>{{dataM.imdbRating}}</p>
@@ -68,14 +81,16 @@ export default {
   props: ["dataM"],
   data() {
     return {
-      items: "",
-      query: ""
+      titles: [],
+      years: [],
+      titleQ: [],
+      yearQ: []
     };
   },
   components: {},
   mounted() {
     fetch(
-      `${process.env.VUE_APP_API_URL_TITLE}/?apikey=${process.env.VUE_APP_API_KEY}&t=${this.query}`
+      `${process.env.VUE_APP_API_URL_TITLE}/?apikey=${process.env.VUE_APP_API_KEY}&t=${this.titleQ}`
     )
       .then(res => res.json())
       .then(json => {
@@ -85,14 +100,11 @@ export default {
 
   methods: {
     search: function(e) {
-      this.query = this.items;
-
-      const mPoster = document.querySelector("img");
-      mPoster.setAttribute("src", this.dataM.Poster);
-
+      this.titleQ = this.titles;
+      this.yearQ = this.years;
       if (e) {
         fetch(
-          `${process.env.VUE_APP_API_URL_TITLE}/?apikey=${process.env.VUE_APP_API_KEY}&t=${this.query}`
+          `${process.env.VUE_APP_API_URL_TITLE}/?apikey=${process.env.VUE_APP_API_KEY}&t=${this.titleQ}&y=${this.yearQ}`
         )
           .then(res => res.json())
           .then(json => {
@@ -105,23 +117,29 @@ export default {
 </script>
 
 <style>
-.margin40 {
-  margin: 20px;
-}
-.media {
-  margin-left: 25px;
-  margin-right: 40px;
-}
-.media-values {
-  margin-top: 20px;
-}
+@import url("https://fonts.googleapis.com/css2?family=Kufam:ital,wght@0,400;0,700;1,900&display=swap");
 
-/* #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-} */
+label {
+  padding: 20px 0 0 20px;
+}
+.media-body {
+  margin: 20px 0 0 0;
+}
+.text-title {
+  font-family: "Kufam", cursive;
+  font-size: 150%;
+  width: 400;
+}
+.text-values {
+  font-family: "Kufam", cursive;
+  font-size: 100%;
+}
+#app {
+  background: rgb(131, 58, 180);
+  background: linear-gradient(
+    90deg,
+    rgba(131, 58, 180, 1) 0%,
+    rgba(29, 253, 190, 1) 100%
+  );
+}
 </style>
