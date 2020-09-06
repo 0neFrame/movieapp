@@ -17,8 +17,8 @@
           </div>
           <div class="col-3">
             <input
-              v-model="years"
-              type="text"
+              type="number"
+              v-model.number="years"
               id="input1"
               class="form-control text-center"
               placeholder="year"
@@ -30,16 +30,17 @@
         </div>
       </div>
     </form>
-    <h1
-      v-show="q=!q"
-      class="media-body justify-content-center text-center"
-      v-if="!dataM.Title"
-    >comin soon...maybe</h1>
+
+    <transition name="soon">
+      <h1 class="spec media-body text-title justify-content-center text-center" v-if="!dataM.Title">
+        comin soon...
+        <h5>maybe...</h5>
+      </h1>
+    </transition>
     <div class="media text-values">
       <img :src="dataM.Poster" class="align-self-start mr-3 col-xs col-sm-0" alt />
-
       <div class="media-body">
-        <h1 class="mt-0" v-bind="dataM">{{dataM.Title}}</h1>
+        <h1 class="mt-0" v-bind="dataM">{{ dataM.Title }}</h1>
         <dl class="row media-values">
           <dt class="col-sm-1 con-sm-1" v-if="dataM.Title">
             <p>Type</p>
@@ -52,22 +53,22 @@
             <p>Released</p>
             <p>DVD</p>
             <p>Rated</p>
-            <p>Metascore</p>
             <p>IMDB_Rate</p>
+            <p>Metascore</p>
           </dt>
           <dd class="col-sm-10 row-sm-1" v-bind="dataM">
-            <p>{{dataM.Type}}</p>
-            <p>{{dataM.Director}}</p>
-            <p>{{dataM.Writer}}</p>
-            <p>{{dataM.Actors}}</p>
-            <p>{{dataM.Genre}}</p>
-            <p>{{dataM.Year}}</p>
-            <p>{{dataM.Runtime}}</p>
-            <p>{{dataM.Released}}</p>
-            <p>{{dataM.DVD}}</p>
-            <p>{{dataM.Rated}}</p>
-            <p>{{dataM.Metascore}}</p>
-            <p>{{dataM.imdbRating}}</p>
+            <p>{{ dataM.Type }}</p>
+            <p>{{ dataM.Director }}</p>
+            <p>{{ dataM.Writer }}</p>
+            <p>{{ dataM.Actors }}</p>
+            <p>{{ dataM.Genre }}</p>
+            <p>{{ dataM.Year }}</p>
+            <p>{{ dataM.Runtime }}</p>
+            <p>{{ dataM.Released }}</p>
+            <p>{{ dataM.DVD }}</p>
+            <p>{{ dataM.Rated }}</p>
+            <p>{{ dataM.imdbRating }}</p>
+            <p>{{ dataM.Metascore }}</p>
           </dd>
         </dl>
       </div>
@@ -84,17 +85,19 @@ export default {
       titles: [],
       years: [],
       titleQ: [],
-      yearQ: []
+      yearQ: [],
+      resp: []
     };
   },
   components: {},
   mounted() {
     fetch(
-      `${process.env.VUE_APP_API_URL_TITLE}/?apikey=${process.env.VUE_APP_API_KEY}&t=${this.titleQ}`
+      `${process.env.VUE_APP_API_URL_TITLE}/?apikey=${process.env.VUE_APP_API_KEY}`
     )
       .then(res => res.json())
       .then(json => {
         this.dataM = json;
+        this.resp = console.log(json.keys);
       });
   },
 
@@ -109,6 +112,7 @@ export default {
           .then(res => res.json())
           .then(json => {
             this.dataM = json;
+            this.resp = console.log(json.keys);
           });
       }
     }
@@ -121,6 +125,9 @@ export default {
 
 label {
   padding: 20px 0 0 20px;
+}
+.spec {
+  padding: 225px 0px 225px 0px;
 }
 .media-body {
   margin: 20px 0 0 0;
@@ -138,8 +145,17 @@ label {
   background: rgb(131, 58, 180);
   background: linear-gradient(
     90deg,
-    rgba(131, 58, 180, 1) 0%,
+    rgb(124, 118, 128) 0%,
     rgba(29, 253, 190, 1) 100%
   );
+}
+
+.soon-enter-active {
+  transition: 0.9s;
+}
+.soon-enter,
+.soon-leave-to {
+  transform: translateX(150px);
+  opacity: 0;
 }
 </style>
