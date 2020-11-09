@@ -11,7 +11,7 @@
           v-on:click="randomMovie"
           class="btn btn-outline-dark text-values"
         >
-          RANDOM
+          random
         </button>
       </div>
       <div class="container text-values">
@@ -20,7 +20,7 @@
             <input
               v-model="titles"
               type="text"
-              id="input1"
+              id="titles"
               class="form-control text-center"
               placeholder="title"
             />
@@ -29,7 +29,7 @@
             <input
               type="number"
               v-model.number="years"
-              id="input1"
+              id="years"
               class="form-control text-center"
               placeholder="year"
             />
@@ -64,17 +64,17 @@
         <div class="media-body">
           <h1 class="mt-0">{{ movieValue.Title }}</h1>
           <dl class="row container">
-            <dt class="col-sm-1 con-sm-1" v-if="movieValue.Title">
-              <p>Type</p>
-              <p>Director</p>
-              <p>Genre</p>
-              <p>Runtime</p>
-              <p>Year</p>
-              <p>Released</p>
+            <dt class="col-sm-2 con-sm-1" v-if="movieValue.Title">
+              <p>TYPE</p>
+              <p>DIRECTOR</p>
+              <p>GENRE</p>
+              <p>RUNTIME</p>
+              <p>YEAR</p>
+              <p>RELEASED</p>
               <p>DVD</p>
-              <p>Rated</p>
-              <p>IMDB_Rate</p>
-              <p>Metascore</p>
+              <p>RATED</p>
+              <p>IMDB_RATE</p>
+              <p>METASCORE</p>
             </dt>
             <dd class="col-sm-10 row-sm-1" v-bind="movieValue">
               <p>{{ movieValue.Type }}</p>
@@ -89,16 +89,23 @@
               <p>{{ movieValue.Metascore }}</p>
             </dd>
           </dl>
-          <router-link to="/user/s/movies">
+          <div class="btntoadd">
             <button
-              v-on:click.once="addMyMovieClick"
-              data-toggle="button"
-              aria-pressed="false"
+              v-if="user"
+              v-on:click.prevent="addMovie"
               class="btnMyMovie btn btn-outline-dark"
             >
-              Add in My Collaction
+              add in collaction
             </button>
-          </router-link>
+          </div>
+          <!-- <div v-else class="btnfordel">
+              <button
+                v-on:click="delMovie"
+                class="btnMyMovie btn btn-outline-danger"
+              >
+                Delete form Collaction
+              </button>
+            </div> -->
         </div>
       </div>
     </transition>
@@ -106,32 +113,99 @@
 </template>
 
 <script>
-import { mapGetters, mapActions, mapMutations } from "vuex";
+import axios from "axios";
 
 export default {
   name: "search",
   data() {
     return {
       titles: [],
-      years: []
+      years: [],
+      movieValue: [],
+      clickBtn: true,
+      user: localStorage.jwt
     };
   },
+  // async mounted() {
+  //   await axios
+  //     .post("http://127.0.0.1:3333/api/v1/users/login", {
+  //       jwt: localStorage.jwt
+  //     })
+  //     .catch(error => {
+  //       console.log(error);
+  //     });
+  // },
   methods: {
-    ...mapActions(["fetchMovie", "fetchRandomMovie", "addMyMovieFunc"]),
-    ...mapMutations(["addMyMovie"]),
+    async addMovie() {
+      // console.log(`add movie! - 1`);
 
-    addMyMovieClick() {
-      this.addMyMovieFunc();
+      await axios
+        .post("http://127.0.0.1:3333/api/v1/movies", {
+          id: this.movieValue.imdbID,
+          poster: this.movieValue.Poster,
+          title: this.movieValue.Title,
+          plot: this.movieValue.Plot,
+          jwt: localStorage.jwt,
+          user: localStorage.userID
+        })
+        .then(resp => {
+          console.log(resp);
+          this.movieValue = resp.data;
+          // console.log(`add movie: ${resp.data.Title}, ${resp.data.Year}`);
+          this.clickBtn = false;
+          // console.log(`add movie! - 2`);
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
-    searchMovie() {
-      this.fetchMovie([this.years, this.titles]);
+
+    // async delMovie() {
+    //   this.clickBtn = true;
+
+    //   console.log(`del movie! - 1`);
+
+    //   await axios
+    //     .post("http://127.0.0.1:3333/search/del", {
+    //       id: this.movieValue.imdbID
+    //     })
+    //     .then(resp => {
+    //       console.log(`post ID movie: ${this.movieValue.imdbID}, ${resp}`);
+    //       console.log(`del movie! - 2`);
+    //     })
+    //     .catch(error => {
+    //       console.log(error);
+    //     });
+    // },
+
+    async searchMovie() {
+      await axios
+        .post("http://127.0.0.1:3333/search", {
+          t: this.titles,
+          y: this.years
+        })
+        .then(resp => {
+          console.log(`frontend post: ${resp.data.Title}, ${resp.data.Year}`);
+          this.movieValue = resp.data;
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
-    randomMovie() {
-      this.fetchRandomMovie();
+
+    async randomMovie() {
+      await axios
+        .post("http://127.0.0.1:3333/search/r", {
+          i: `tt${Math.floor(Math.random() * 10000000 + 1)}`
+        })
+        .then(resp => {
+          this.movieValue = resp.data;
+          console.log(`frontend post: ${resp.data.Title}, ${resp.data.Year}`);
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
-  },
-  computed: {
-    ...mapGetters(["movieValue", "postsValue", "comMovieValue"])
   }
 };
 </script>
@@ -163,6 +237,12 @@ label {
 
 .media-body {
   margin: 20px 0 0 0;
+}
+
+@media (max-width: 475px) {
+  .container {
+    max-width: min-content;
+  }
 }
 
 .soon-enter-active {

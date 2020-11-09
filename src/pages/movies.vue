@@ -1,77 +1,120 @@
 <template>
   <div class="myMovie text-values">
-    <div v-if="comMovieValue[0].poster" class="addNewMyMovie">
+    <div v-if="movieColl" class="addNewMyMovie">
       <div class="container row col justify-content-center">
         <div
-          v-for="(value, index) in comMovieValue"
+          v-for="(value, index) in allMovie"
           :key="(value, index)"
           :id="index"
           class="card"
           style="width: 18rem;"
         >
-          <img
-            :src="comMovieValue[index].poster"
-            class="card-img-top"
-            alt="..."
-          />
+          <img :src="allMovie[index].poster" class="card-img-top" alt="..." />
           <div class="card-body">
-            <p class="card-text">{{ comMovieValue[index].plot }}</p>
+            <p class="card-text">{{ allMovie[index].plot }}</p>
           </div>
-          <div :id="index">
-            <b-form-rating v-model="valueStars"></b-form-rating>
-            <p v-if="valueStars" class="mt-2">My Rating: {{ valueStars }}</p>
-            <p v-if="!valueStars" class="mt-2">Haven't Rating</p>
-          </div>
-          <!-- <router-link to="/review">
-            <a :href="comMovieValue[index].id">
+          <!-- <div :id="index">
+            <b-form-rating v-model="allMovie[index].rating"></b-form-rating>
+            <p v-if="allMovie[index].rating" class="mt-2">
+              My Rating: {{ allMovie[index].rating }}
+            </p>
+            <p v-else class="mt-2">Haven't Rating</p>
+          </div> -->
+          <form class="btnsforcollaction">
+            <!-- <a :href="allMovie[index]._id"> -->
+            <!-- <router-link to="/review">
+                <button
+                  id="addbtn"
+                  :name="[index]"
+                  :value="allMovie[index]._id"
+                  v-on:click.prevent="addReview"
+                  type="submit"
+                  class="col btn btn-outline-dark"
+                >
+                  review
+                </button>
+              </router-link> -->
+            <!-- </a> -->
             <button
-              :id="index"
-              v-on:click="addIndexMovie"
+              id="delbtn"
+              :name="[index]"
+              :value="allMovie[index]._id"
+              v-on:click.prevent="delMovie"
               type="submit"
-              class="col btn btn-outline-dark"
-            >view</button>
-            </a>
-          </router-link>-->
+              class="col btn btn-outline-danger"
+            >
+              x
+            </button>
+          </form>
         </div>
       </div>
+    </div>
+    <div v-else class="emptycollaction user-select-none">
+      <h1>WHERE IS MY MIDN?</h1>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import axios from "axios";
 
 export default {
   name: "movies",
   data() {
     return {
       // valueStars: null,
-      indexMovie: []
+      indexMovie: [],
+      allMovie: [],
+      movieColl: false
     };
   },
-  methods: {
-    addIndexMovie() {
-      // this.indexMovie = this.button.index;
-      // console.log(this.indexMovie, this.comMovieValue[this.indexMovie]);
-    }
+  async mounted() {
+    await axios
+      .get("http://127.0.0.1:3333/api/v1/movies")
+      .then(resp => {
+        let docs = resp.data.docs;
+        this.allMovie = [];
+        docs.forEach(el => {
+          console.log(el);
+          if (el.user.id === localStorage.userID) this.allMovie.unshift(el);
+        });
+        if (resp.data.results > 0) this.movieColl = true;
+        else this.movieColl = false;
+      })
+      .catch(error => {
+        console.log(error);
+      });
   },
-  computed: {
-    ...mapGetters(["comMovieValue", "postsValue"]),
+  methods: {
+    async delMovie() {
+      const idMovie = await document.activeElement.value;
+      await axios.delete(`http://127.0.0.1:3333/api/v1/movies/${idMovie}`);
+      console.log("DELETED");
 
-    valueStars: {
-      get() {
-        return this.comMovieValue.valueStars;
-      },
-      set(val) {
-        this.$store.commit("prePostsMovie", val);
-      }
-    }
+      await axios
+        .get("http://127.0.0.1:3333/api/v1/movies")
+        .then(resp => {
+          let docs = resp.data.docs;
+          this.allMovie = [];
+          docs.forEach(el => {
+            console.log(el);
+            if (el.user.id === localStorage.userID) this.allMovie.unshift(el);
+          });
+          if (resp.data.results > 0) this.movieColl = true;
+          else this.movieColl = false;
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    addReview() {}
   }
 };
 </script>
 
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Kufam:ital,wght@0,400;0,700;1,900&display=swap");
+
 .text-title {
   font-family: "Kufam", cursive;
   font-size: 150%;
@@ -95,5 +138,8 @@ export default {
 }
 .spec {
   padding: 25vh 0 50vh 0;
+}
+.emptycollaction {
+  padding: 25vh 0 55vh 0;
 }
 </style>

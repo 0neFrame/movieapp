@@ -3,12 +3,16 @@
     <div class="container">
       <h1>HELLO, MY NAME - YOUR NAME</h1>
     </div>
-    <router-view></router-view>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {};
+  },
+  mounted() {}
+};
 </script>
 
 <style>

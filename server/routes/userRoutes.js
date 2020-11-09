@@ -2,7 +2,7 @@ const userController = require("../controllers/userController");
 const authController = require("../controllers/authController");
 const reviewRoutes = require("../routes/reviewRoutes");
 const express = require("express");
-const routerS = express.Router();
+const routerS = express.Router({ mergeParams: true });
 
 routerS.use("/:userId/movies/:movieId/reviews", reviewRoutes);
 

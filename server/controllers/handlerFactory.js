@@ -37,11 +37,11 @@ exports.updateOne = (Model) =>
 
 exports.createOne = (Model) =>
   catchAsync(async (req, res, next) => {
-    const docs = await Model.create();
+    const docs = await Model.create(req.body);
 
-    res.status(200).json({
+    res.status(201).json({
       status: "success",
-      results: docs.length,
+      // results: docs.length,
       data: {
         docs,
       },
@@ -75,8 +75,8 @@ exports.getAll = (Model) =>
     res.status(200).json({
       status: "success",
       results: docs.length,
-      data: {
+      // data: {
         docs,
-      },
+      // },
     });
   });

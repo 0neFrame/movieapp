@@ -4,26 +4,26 @@ const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const xss = require("xss-clean");
-const path = require("path");
+const cors = require("cors");
 const appS = express();
-// appS.use(require("connect-history-api-fallback")());
 
 const gErrorHandler = require("./controllers/errorController");
 const mongoSanitize = require("express-mongo-sanitize");
-const AppError = require("./utils/AppError");
 const reviewRoutes = require("./routes/reviewRoutes");
 const movieRoutes = require("./routes/movieRoutes");
 const userRoutes = require("./routes/userRoutes");
-
-// appS.set('views', path.join(__dirname, 'views'));
-// appS.set("view engine", "pug");
-appS.use(express.static(path.join(__dirname, "src")));
+const AppError = require("./utils/AppError");
+const getMovie = require("./axios/getMovie");
+const delMovie = require("./axios/delMovie");
+const getRandomMovie = require("./axios/getRandomMovie");
 
 appS.use(helmet());
 
 if (process.env.NODE_ENV === "development") {
   appS.use(morgan("dev"));
 }
+
+appS.use(cors());
 
 const limiter = rateLimit({
   max: 100,
@@ -37,20 +37,22 @@ appS.use(xss());
 
 appS.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
+  console.log(
+    req.requestTime,
+    /*req.user.role , req.body.jwt, req.localStorage*/
+  );
   next();
 });
 
-// appS.get("/", (req, res) => {
-//   res.status(200).render("App");
-// });
-
-appS.use("/api/v1/reviews", reviewRoutes);
-appS.use("/api/v1/movies", movieRoutes);
 appS.use("/api/v1/users", userRoutes);
+appS.use("/api/v1/movies", movieRoutes);
+appS.use("/api/v1/reviews", reviewRoutes);
+appS.use("/search", getMovie, getRandomMovie, delMovie);
 
 appS.all("*", (req, res, next) => {
   next(new AppError(`Yo! Cant find - ${req.originalUrl}`, 404));
 });
+
 appS.use((req, res, next) => {
   console.log("MIDDLEWARE! IT WORKS");
   next();

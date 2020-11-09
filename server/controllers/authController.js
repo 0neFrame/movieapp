@@ -22,10 +22,14 @@ const createSendToken = (user, statusCode, res) => {
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 360000
     ),
     httpOnly: true,
+    secure: true,
   };
-  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
 
+  // if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
+
+  // res.set("Access-Control-Allow-Credentials", "true");
   res.cookie("jwt", token, cookieOptions);
+  // res.localStorage("jwt", token);
 
   user.password = undefined;
 
@@ -43,9 +47,9 @@ exports.singup = catchAsync(async (req, res, next) => {
     name: req.body.name,
     nickname: req.body.nickname,
     email: req.body.email,
-    role: req.body.role,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
+    role: req.body.role,
   });
 
   createSendToken(newUser, 201, res);
@@ -73,6 +77,8 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith("Bearer")
   ) {
     token = req.headers.authorization.split(" ")[1];
+  } else if (req.cookie.jwt) {
+    token = req.cookie.jwt;
   }
 
   if (!token) {
@@ -91,6 +97,28 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
 
   req.user = currentUser;
+  next();
+});
+
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  if (req.body.jwt) {
+    const decoded = await promisify(jwt.verify)(
+      req.body.jwt,
+      process.env.JWT_SECRET
+    );
+
+    const currentUser = await User.findById(decoded.id);
+    if (!currentUser) {
+      return next();
+    }
+
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
+      return next();
+    }
+
+    req.user = currentUser;
+    return next();
+  }
   next();
 });
 

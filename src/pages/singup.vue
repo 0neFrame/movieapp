@@ -6,20 +6,21 @@
         <hr />
         <div class="row justify-content-center">
           <div class="form-group">
-            <label for="exampleInputEmail1">Email address</label>
+            <label for="exampleEmail1">Email address</label>
             <input
+              v-model.trim="email"
               placeholder="example@gmail.com"
               type="email"
               class="form-control justify-content-center text-center"
               id="email"
               aria-describedby="emailHelp"
             />
-            <small id="emailHelp" class="form-text text-muted"
+            <!-- <small id="emailHelp" class="form-text text-muted"
               >We'll never share your email with anyone else</small
-            >
+            > -->
           </div>
           <div class="form-group">
-            <label for="exampleInputPassword1">Password</label>
+            <label for="examplePassword1">Password</label>
             <input
               v-model.trim="password"
               placeholder="minimum 8 characters"
@@ -40,28 +41,80 @@
               <span class="input-group-text">Your name</span>
             </div>
             <input
+              v-model="name"
               type="text"
               placeholder="Your name"
               class="form-control col-sm-3 text-center"
             />
             <input
+              v-model.trim="nickname"
               type="text"
               placeholder="Your nickname (optional)"
               class="form-control col-sm-3 text-center"
             />
             <small id="nickname" class="form-text text-muted"
-              >if you want have unique ID</small
+              >( if you want have unique ID )</small
             >
           </div>
         </div>
       </div>
     </form>
-    <button type="submit" class="btn btn-outline-dark">Submit</button>
+    <button @click="singUp" type="submit" class="btn btn-outline-dark">
+      Submit
+    </button>
+    <div class="spec"></div>
   </div>
 </template>
 
 <script>
-export default {};
+import axios from "axios";
+
+export default {
+  name: "singup",
+  data() {
+    return {
+      name: [],
+      nickname: "",
+      email: [],
+      password: [],
+      passwordConfirm: [],
+      jwt: [],
+      userID: []
+    };
+  },
+  methods: {
+    async singUp() {
+      await axios
+        .post("http://127.0.0.1:3333/api/v1/users/singup", {
+          name: this.name,
+          nickname: this.nickname,
+          email: this.email,
+          password: this.password,
+          passwordConfirm: this.passwordConfirm
+        })
+        .then(resp => {
+          console.log(resp);
+          this.jwt = resp.data.token;
+          this.userID = resp.data.data.user._id;
+          console.log(this.jwt);
+          window.setTimeout(() => {
+            location.assign("/");
+          }, 900);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  },
+  watch: {
+    jwt(newJWT) {
+      localStorage.jwt = newJWT;
+    },
+    userID(newUserID) {
+      localStorage.userID = newUserID;
+    }
+  }
+};
 </script>
 
 <style scoped>
@@ -79,5 +132,9 @@ export default {};
 
 button {
   margin: 20px 20px 20px 20px;
+}
+
+.spec {
+  padding: 0 0 50vh 0;
 }
 </style>

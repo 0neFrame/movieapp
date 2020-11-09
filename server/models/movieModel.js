@@ -3,20 +3,16 @@ const mongoose = require("mongoose");
 const movieSchema = new mongoose.Schema(
   {
     id: {
-      type: Number,
+      type: String,
       unique: true,
     },
-
     plot: String,
-
     poster: String,
-
     title: String,
-
     rating: {
       type: Number,
-      max: 5,
       min: 1,
+      max: 5,
       default: null,
     },
 
@@ -25,16 +21,26 @@ const movieSchema = new mongoose.Schema(
     //   ref: "Review",
     // },
 
-    // user: {
-    //   type: mongoose.Schema.ObjectId,
-    //   ref: "User",
-    // },
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+    },
   },
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
 );
+
+movieSchema.index({ movie: 1 }, { unique: true });
+
+movieSchema.pre(/^find/, function(next) {
+  this.populate({
+    path: "user",
+    select: "_id",
+  });
+  next();
+});
 
 // movieSchema.pre(/^find/, function(next) {
 //   this.populate({

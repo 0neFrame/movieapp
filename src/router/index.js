@@ -1,67 +1,75 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import home from "../pages/home.vue";
 import profile from "../pages/profile.vue";
 import movies from "../pages/movies.vue";
+// import home from "../pages/home.vue";
 
 Vue.use(VueRouter);
 
 const routes = [
-  {
-    path: "*",
-    component: home,
-  },
+  // {
+  //   path: "*",
+  //   component: () => import("../pages/search.vue")
+  // },
+  // {
+  //   path: "/",
+  //   name: "home",
+  //   component: home,
+  // },
   {
     path: "/",
-    name: "home",
-    component: home,
-  },
-  {
-    path: "/search",
     name: "search",
-    component: () =>
-      import(/* webpackChunkName: "search" */ "../pages/search.vue"),
+    component: () => import("../pages/search.vue")
   },
   {
     path: "/singup",
     name: "singup",
-    component: () =>
-      import(/* webpackChunkName: "singup" */ "../pages/singup.vue"),
+    component: () => import("../pages/singup.vue")
   },
   {
     path: "/login",
     name: "login",
-    component: () =>
-      import(/* webpackChunkName: "login" */ "../pages/login.vue"),
+    component: () => import("../pages/login.vue")
+  },
+  // {
+  //   path: "/about",
+  //   name: "about",
+  //   component: () => import("../pages/about.vue")
+  // },
+  {
+    path: "/movies",
+    component: movies
   },
   {
-    path: "/about",
-    name: "about",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../pages/about.vue"),
+    path: "/profile",
+    component: profile
   },
   {
-    path: "/user/:id",
-    component: profile,
-    children: [
-      { path: "/", component: home },
-      {
-        path: "movies",
-        component: movies,
-      },
-      {
-        path: "review",
-        name: "review",
-        component: () =>
-          import(/* webpackChunkName: "review" */ "../pages/review.vue"),
-      },
-    ],
-  },
+    path: "/review/:id",
+    component: () => import("../pages/review.vue"),
+    // children: [{ path: "/", component: () => import("../pages/review.vue") }]
+  }
+  // {
+  //   path: "/user/:id",
+  //   component: profile,
+  //   children: [
+  //     { path: "/", component: () => import("../pages/search.vue") },
+  //     {
+  //       path: "movies",
+  //       component: movies,
+  //     },
+  //     {
+  //       path: "review",
+  //       name: "review",
+  //       component: () => import("../pages/review.vue"),
+  //     },
+  //   ],
+  // },
 ];
 
 const router = new VueRouter({
   mode: "history",
-  routes,
+  routes
 });
 
 export default router;
