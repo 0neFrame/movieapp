@@ -7,44 +7,32 @@
           :key="(value, index)"
           :id="index"
           class="card"
-          style="width: 18rem;"
+          style="width: 18rem"
         >
           <img :src="allMovie[index].poster" class="card-img-top" alt="..." />
           <div class="card-body">
             <p class="card-text">{{ allMovie[index].plot }}</p>
           </div>
-          <!-- <div :id="index">
-            <b-form-rating v-model="allMovie[index].rating"></b-form-rating>
-            <p v-if="allMovie[index].rating" class="mt-2">
-              My Rating: {{ allMovie[index].rating }}
-            </p>
-            <p v-else class="mt-2">Haven't Rating</p>
-          </div> -->
           <form class="btnsforcollaction">
-            <!-- <a :href="allMovie[index]._id"> -->
-            <!-- <router-link to="/review">
-                <button
-                  id="addbtn"
-                  :name="[index]"
-                  :value="allMovie[index]._id"
-                  v-on:click.prevent="addReview"
-                  type="submit"
-                  class="col btn btn-outline-dark"
-                >
-                  review
-                </button>
-              </router-link> -->
-            <!-- </a> -->
-            <button
-              id="delbtn"
-              :name="[index]"
-              :value="allMovie[index]._id"
-              v-on:click.prevent="delMovie"
-              type="submit"
-              class="col btn btn-outline-danger"
+            <router-link
+              :to="{
+                name: 'user',
+                params: { userId: lsUserID },
+                name: 'movies',
+                params: { movieId: allMovie[index]._id },
+                name: 'review',
+              }"
+              replace
             >
-              x
-            </button>
+              <button
+                v-on:click="addReview"
+                type="submit"
+                class="col btn btn-outline-dark"
+                :value="allMovie[index]._id"
+              >
+                review
+              </button>
+            </router-link>
           </form>
         </div>
       </div>
@@ -62,53 +50,74 @@ export default {
   name: "movies",
   data() {
     return {
-      // valueStars: null,
+      lsUserID: localStorage.userID,
       indexMovie: [],
       allMovie: [],
-      movieColl: false
+      movieColl: false,
+      haveUser: false,
     };
   },
   async mounted() {
     await axios
       .get("http://127.0.0.1:3333/api/v1/movies")
-      .then(resp => {
+      .then((resp) => {
         let docs = resp.data.docs;
         this.allMovie = [];
-        docs.forEach(el => {
-          console.log(el);
-          if (el.user.id === localStorage.userID) this.allMovie.unshift(el);
+        docs.forEach((el) => {
+          function checkAvailability(arr, val) {
+            return arr.some((arrVal) => val === arrVal);
+          }
+          if (checkAvailability(el.userUnqID, localStorage.userID)) {
+            this.allMovie.unshift(el);
+          }
         });
-        if (resp.data.results > 0) this.movieColl = true;
+        if (this.allMovie.length > 0) this.movieColl = true;
         else this.movieColl = false;
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
   },
   methods: {
-    async delMovie() {
+    // async delMovie() {
+    //   const idMovie = await document.activeElement.value;
+    //   await axios.delete(`http://127.0.0.1:3333/api/v1/movies/${idMovie}`);
+    //   console.log("DELETED");
+    //   await axios
+    //     .get("http://127.0.0.1:3333/api/v1/movies")
+    //     .then((resp) => {
+    //       let docs = resp.data.docs;
+    //       this.allMovie = [];
+    //       docs.forEach((el) => {
+    //         function checkAvailability(arr, val) {
+    //           return arr.some((arrVal) => val === arrVal);
+    //         }
+    //         if (checkAvailability(el.userUnqID, localStorage.userID)) {
+    //           this.allMovie.unshift(el);
+    //         }
+    //       });
+    //       if (this.allMovie.length > 0) this.movieColl = true;
+    //       else this.movieColl = false;
+    //     })
+    //     .catch((error) => {
+    //       console.log(error);
+    //     });
+    // },
+    async addReview() {
       const idMovie = await document.activeElement.value;
-      await axios.delete(`http://127.0.0.1:3333/api/v1/movies/${idMovie}`);
-      console.log("DELETED");
-
       await axios
-        .get("http://127.0.0.1:3333/api/v1/movies")
-        .then(resp => {
-          let docs = resp.data.docs;
-          this.allMovie = [];
-          docs.forEach(el => {
-            console.log(el);
-            if (el.user.id === localStorage.userID) this.allMovie.unshift(el);
-          });
-          if (resp.data.results > 0) this.movieColl = true;
-          else this.movieColl = false;
+        .post(`http://127.0.0.1:3333/api/v1/reviews`, {
+          user: localStorage.userID,
+          movie: idMovie,
         })
-        .catch(error => {
+        .then((resp) => {
+          console.log(resp);
+        })
+        .catch((error) => {
           console.log(error);
         });
     },
-    addReview() {}
-  }
+  },
 };
 </script>
 
@@ -135,9 +144,6 @@ export default {
 }
 .card {
   margin: 10px 0px 0px 1px;
-}
-.spec {
-  padding: 25vh 0 50vh 0;
 }
 .emptycollaction {
   padding: 25vh 0 55vh 0;

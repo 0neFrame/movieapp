@@ -123,7 +123,7 @@ export default {
       years: [],
       movieValue: [],
       clickBtn: true,
-      user: localStorage.jwt
+      user: localStorage.jwt,
     };
   },
   // async mounted() {
@@ -137,8 +137,6 @@ export default {
   // },
   methods: {
     async addMovie() {
-      // console.log(`add movie! - 1`);
-
       await axios
         .post("http://127.0.0.1:3333/api/v1/movies", {
           id: this.movieValue.imdbID,
@@ -146,16 +144,14 @@ export default {
           title: this.movieValue.Title,
           plot: this.movieValue.Plot,
           jwt: localStorage.jwt,
-          user: localStorage.userID
+          userUnqID: localStorage.userID,
         })
-        .then(resp => {
+        .then((resp) => {
           console.log(resp);
           this.movieValue = resp.data;
-          // console.log(`add movie: ${resp.data.Title}, ${resp.data.Year}`);
           this.clickBtn = false;
-          // console.log(`add movie! - 2`);
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
@@ -182,13 +178,13 @@ export default {
       await axios
         .post("http://127.0.0.1:3333/search", {
           t: this.titles,
-          y: this.years
+          y: this.years,
         })
-        .then(resp => {
+        .then((resp) => {
           console.log(`frontend post: ${resp.data.Title}, ${resp.data.Year}`);
           this.movieValue = resp.data;
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
@@ -196,17 +192,17 @@ export default {
     async randomMovie() {
       await axios
         .post("http://127.0.0.1:3333/search/r", {
-          i: `tt${Math.floor(Math.random() * 10000000 + 1)}`
+          i: `tt${Math.floor(Math.random() * 10000000 + 1)}`,
         })
-        .then(resp => {
+        .then((resp) => {
           this.movieValue = resp.data;
           console.log(`frontend post: ${resp.data.Title}, ${resp.data.Year}`);
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -221,10 +217,6 @@ export default {
 .text-values {
   font-family: "Kufam", cursive;
   font-size: 100%;
-}
-
-label {
-  padding: 0px 0px 0px 20px;
 }
 
 .spec {

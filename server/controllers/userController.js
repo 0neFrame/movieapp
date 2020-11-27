@@ -22,7 +22,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     return next(new AppError("THIS ROUTE FOR UPDATE DATA", 400));
   }
   const filteredBody = filterObj(req.body, "name", "email");
-  const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
+  const updatedUser = await User.findByIdAndUpdate(req.body.id, filteredBody, {
     new: true,
     runValidators: true,
   });
@@ -35,7 +35,8 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteMe = catchAsync(async (req, res, next) => {
-  await User.findByIdAndUpdate(req.user.id, { active: false });
+  await User.findByIdAndUpdate(req.body.id, { active: false });
+  
   res.status(204).json({
     status: "success",
     data: null,
@@ -43,7 +44,7 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
 });
 
 // exports.getUser = factory.getOne(User, { path: "reviews" });
-exports.getUser = factory.getOne(User, { path: "movies" });
+exports.getUser = factory.getOne(User);
 exports.getAllUsers = factory.getAll(User);
 exports.createUser = factory.createOne(User);
 exports.updateUser = factory.updateOne(User);

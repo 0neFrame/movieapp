@@ -12,12 +12,12 @@ const userSchema = new mongoose.Schema(
       maxlength: [30, "Max. character - 30"],
     },
 
-    nickname: {
-      type: String,
-      unique: true,
-      minlength: [1, "Min. character - 1"],
-      maxlength: [20, "Max. character - 20"],
-    },
+    // nickname: {
+    //   type: String,
+    //   unique: true,
+    //   minlength: [1, "Min. character - 1"],
+    //   maxlength: [20, "Max. character - 20"],
+    // },
 
     email: {
       type: String,
@@ -63,10 +63,10 @@ const userSchema = new mongoose.Schema(
       default: true,
       select: true,
     },
-    movie: {
-      type: mongoose.Schema.ObjectId,
-      ref: "Movie",
-    },
+    // movie: {
+    //   type: mongoose.Schema.ObjectId,
+    //   ref: "Movie",
+    // },
 
   },
   {
@@ -80,19 +80,19 @@ const userSchema = new mongoose.Schema(
 //   foreignField: "user",
 //   localField: "_id",
 // });
-userSchema.virtual("movies", {
-  ref: "Movie",
-  foreignField: "user",
-  localField: "_id",
-});
+// userSchema.virtual("movies", {
+//   ref: "Movie",
+//   foreignField: "user",
+//   localField: "_id",
+// });
 
-userSchema.index({ user: 1 }, { unique: true });
-userSchema.pre(/^find/, function(next) {
-  this.populate({
-    path: "movie",
-  });
-  next();
-});
+// userSchema.index({ user: 1 }, { unique: true });
+// userSchema.pre(/^find/, function(next) {
+//   this.populate({
+//     path: "movie",
+//   });
+//   next();
+// });
 
 userSchema.pre("save", async function(next) {
   if (!this.isModified("password")) return next();

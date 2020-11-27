@@ -1,55 +1,86 @@
 <template id="tempo">
   <div class="container">
     <div class="media text-values">
-      <img
-        :src="comMovieValue[indexValue].poster"
-        class="align-self-center mr-3 col-sm-0"
-        alt
-      />
       <div class="media-body">
-        <h1 class="mt-0">{{ comMovieValue[indexValue].title }}</h1>
-        <div>
+        <img
+          :src="movieData.poster"
+          class="align-self-center mr-3 col-sm-0"
+          alt
+        />
+      </div>
+      <div class="media-body">
+        <h1 class="mt-0">{{ movieData.title }}</h1>
+        <div class="container">
+          <div v-if="seen">
+            <b-form-rating v-model="rating" stars="10"></b-form-rating>
+            <p v-if="rating" class="mt-2">My rating: {{ rating }}</p>
+            <p v-else class="mt-2">Haven't rating</p>
+          </div>
           <div>
+            <div v-if="!seen">
+              <b-form-rating
+                v-model="reviewData.rating"
+                stars="10"
+                disabled
+              ></b-form-rating>
+              <p v-if="reviewData.rating" class="mt-2">
+                My rating: {{ reviewData.rating }}
+              </p>
+              <p v-else class="mt-2">Haven't rating</p>
+            </div>
+          </div>
+
+          <div class="container">
             <transition name="valM">
-              <p v-if="!seen" class>
-                My comment: {{ comMovieValue[indexValue].comment }}
+              <p v-if="!seen" class="container text-break text-left">
+                My review: {{ reviewData.review }}
               </p>
             </transition>
             <textarea
               v-if="seen"
-              v-model="comment"
+              v-model="review"
               class="overflow-auto"
               type="text"
               maxlength="300"
               cols="50"
               rows="10"
-              placeholder="enter your text"
+              placeholder="enter your text - max length = 300"
             />
           </div>
-          <button
-            v-if="seen"
-            v-on:click="addComment"
-            data-toggle="button"
-            aria-pressed="false"
-            class="btnMyMovie btn btn-outline-dark"
-          >
-            Save
-          </button>
-          <button
-            v-if="!seen"
-            v-on:click="editComment"
-            data-toggle="button"
-            aria-pressed="false"
-            class="btnMyMovie btn btn-outline-dark"
-          >
-            Edit
-          </button>
-          <div class>
-            <router-link to="/movies">
-              <button class="btnMyMovie btn btn-outline-dark">
-                Back to Collaction
-              </button>
-            </router-link>
+
+          <div v-if="this.$route.params.userId === lsUserID">
+            <button
+              v-if="seen"
+              v-on:click.prevent="saveReview"
+              data-toggle="button"
+              aria-pressed="false"
+              class="btnMyMovie btn btn-outline-dark"
+            >
+              save
+            </button>
+            <button
+              v-if="!seen"
+              v-on:click="editReview"
+              data-toggle="button"
+              aria-pressed="false"
+              class="btnMyMovie btn btn-outline-dark"
+            >
+              edit
+            </button>
+            <div class="">
+              <router-link
+                :to="{
+                  name: 'user',
+                  params: { userId: lsUserID },
+                  name: 'movies',
+                }"
+                replace
+              >
+                <button class="btnMyMovie btn btn-outline-dark">
+                  back to Collaction
+                </button>
+              </router-link>
+            </div>
           </div>
         </div>
       </div>
@@ -58,34 +89,79 @@
 </template>
 
 <script>
-import { mapGetters, mapActions, mapMutations } from "vuex";
+import axios from "axios";
 
 export default {
   name: "review",
   data() {
     return {
-      titles: [],
-      years: [],
-      indexValue: 0,
-      comment: "",
-      seen: false
+      lsUserID: localStorage.userID,
+      review: "",
+      rating: null,
+      seen: false,
+      movieData: [],
+      reviewData: [],
     };
   },
-  methods: {
-    ...mapActions(["addMyMovieFunc"]),
-    ...mapMutations(["addMyMovie"]),
+  async mounted() {
+    await axios
+      .get(`http://127.0.0.1:3333/api/v1/movies/${this.$route.params.movieId}`)
+      .then((resp) => {
+        let doc = resp.data.data.doc;
+        console.log(doc);
+        this.movieData = doc;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
-    addComment() {
-      this.seen = false;
-      this.comMovieValue[this.indexValue].comment = this.comment;
-    },
-    editComment() {
-      this.seen = true;
-    }
+    await axios
+      .get(
+        `http://127.0.0.1:3333/api/v1/users/${this.$route.params.userId}/movies/${this.$route.params.movieId}/reviews`
+      )
+      .then((resp) => {
+        let docs = resp.data.docs;
+        this.reviewData = docs[0];
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   },
-  computed: {
-    ...mapGetters(["comMovieValue"])
-  }
+
+  methods: {
+    async saveReview() {
+      this.seen = false;
+      await axios
+        .patch(`http://127.0.0.1:3333/api/v1/reviews/${this.reviewData.id}`, {
+          review: this.review,
+          rating: this.rating,
+        })
+        .then((resp) => {
+          let doc = resp.data.data.doc;
+          this.reviewData = doc;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      await axios
+        .get(
+          `http://127.0.0.1:3333/api/v1/users/${this.$route.params.userId}/movies/${this.$route.params.movieId}/reviews`
+        )
+        .then((resp) => {
+          let docs = resp.data.docs;
+          this.reviewData = docs[0];
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    editReview() {
+      this.seen = true;
+      this.review = this.reviewData.review;
+      this.rating = this.reviewData.rating;
+    },
+  },
 };
 </script>
 
@@ -109,15 +185,10 @@ textarea {
   background-color: #f8f8f8;
 }
 
-label {
-  padding: 0px 0px 0px 20px;
-}
-.spec {
-  padding: 25vh 0 50vh 0;
-}
 .btnMyMovie {
   margin: 1vh 0 5vh 0;
 }
+
 .media-body {
   margin: 20px 0 0 0;
 }

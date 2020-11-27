@@ -1,11 +1,24 @@
 <template>
   <div id="app">
     <div class="container" id="nav">
-      <a v-if="user">
-        <router-link to="/">MAIN</router-link> ᛫
-        <!-- <router-link to="/about">About</router-link> ᛫ -->
-        <router-link to="/profile">PROFILE</router-link> ᛫
-        <router-link to="/movies">MOVIES</router-link>
+      <a v-if="jwt">
+        <router-link
+          :to="{ name: 'user', params: { userId: lsUserID }, name: 'search' }"
+          replace
+          >SEARCH
+        </router-link>
+        ᛫
+        <router-link
+          :to="{ name: 'user', params: { userId: lsUserID }, name: 'profile' }"
+          replace
+          >PROFILE
+        </router-link>
+        ᛫
+        <router-link
+          :to="{ name: 'user', params: { userId: lsUserID }, name: 'movies' }"
+          replace
+          >MOVIES
+        </router-link>
         <router-link class="login" to="/">
           <button
             type="submit"
@@ -30,24 +43,31 @@
 
 <script>
 // import axios from "axios";
+// import router from "./router/index";
 
 export default {
   name: "App",
   data() {
     return {
-      user: localStorage.jwt
+      jwt: localStorage.jwt,
+      lsUserID: localStorage.userID,
     };
   },
   methods: {
     logOut() {
-      this.user = null;
+      this.jwt = null;
       localStorage.removeItem("jwt");
       localStorage.removeItem("userID");
       window.setTimeout(() => {
         location.assign("/");
-      }, 100);
-    }
-  }
+      }, 1);
+    },
+  },
+  // mounted() {
+  //   console.log(this.$route);
+  //   console.log(this.$route.fullPath);
+  //   console.log(this.$route.params);
+  // },
   // async mounted() {
   //   await axios
   //     .post("http://127.0.0.1:3333/api/v1/movies", {

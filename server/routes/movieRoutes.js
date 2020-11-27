@@ -1,7 +1,8 @@
 const movieController = require("../controllers/movieController");
 const authController = require("../controllers/authController");
 const express = require("express");
-const routerS = express.Router({ mergeParams: true });
+const routerS = express.Router();
+// const routerS = express.Router({ mergeParams: true });
 
 routerS.use(authController.isLoggedIn);
 
@@ -17,6 +18,6 @@ routerS
   .route("/:id")
   .get(movieController.getMovie)
   .patch(authController.restrictTo("user"), movieController.updateMovie)
-  .delete(authController.restrictTo("user"), movieController.deleteMovie);
+  .delete(/*authController.restrictTo("user"),*/ movieController.deleteMovie);
 
 module.exports = routerS;

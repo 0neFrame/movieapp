@@ -6,25 +6,25 @@ const movieSchema = new mongoose.Schema(
       type: String,
       unique: true,
     },
-    plot: String,
-    poster: String,
-    title: String,
-    rating: {
-      type: Number,
-      min: 1,
-      max: 5,
-      default: null,
-    },
 
+    plot: String,
+
+    poster: String,
+
+    title: String,
+
+    userUnqID: {
+      type: Array,
+    },
     // review: {
     //   type: mongoose.Schema.ObjectId,
     //   ref: "Review",
     // },
 
-    user: {
-      type: mongoose.Schema.ObjectId,
-      ref: "User",
-    },
+    // userUnqID: {
+    //   type: mongoose.Schema.ObjectId,
+    //   ref: "User",
+    // },
   },
   {
     toJSON: { virtuals: true },
@@ -32,29 +32,27 @@ const movieSchema = new mongoose.Schema(
   }
 );
 
-movieSchema.index({ movie: 1 }, { unique: true });
-
-movieSchema.pre(/^find/, function(next) {
-  this.populate({
-    path: "user",
-    select: "_id",
-  });
-  next();
-});
-
 // movieSchema.pre(/^find/, function(next) {
 //   this.populate({
-//     path: "review",
-//     select: "createdAt review",
+//     path: "user",
+//     select: "_id",
 //   });
 //   next();
 // });
 
-// movieSchema.virtual("reviews", {
-//   ref: "Review",
-//   foreignField: "movie",
-//   localField: "_id",
-// });
+movieSchema.pre(/^find/, function(next) {
+  this.populate({
+    path: "review",
+    select: "createdAt review",
+  });
+  next();
+});
+
+movieSchema.virtual("reviews", {
+  ref: "Review",
+  foreignField: "movie",
+  localField: "_id",
+});
 
 movieSchema.pre(/^find/, function(next) {
   this.start = Date.now();

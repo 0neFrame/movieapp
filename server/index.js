@@ -12,6 +12,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 const reviewRoutes = require("./routes/reviewRoutes");
 const movieRoutes = require("./routes/movieRoutes");
 const userRoutes = require("./routes/userRoutes");
+const fbRoutes = require("./routes/fbRoutes");
 const AppError = require("./utils/AppError");
 const getMovie = require("./axios/getMovie");
 const delMovie = require("./axios/delMovie");
@@ -44,6 +45,7 @@ appS.use((req, res, next) => {
   next();
 });
 
+appS.use("/", fbRoutes);
 appS.use("/api/v1/users", userRoutes);
 appS.use("/api/v1/movies", movieRoutes);
 appS.use("/api/v1/reviews", reviewRoutes);

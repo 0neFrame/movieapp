@@ -41,7 +41,6 @@ exports.createOne = (Model) =>
 
     res.status(201).json({
       status: "success",
-      // results: docs.length,
       data: {
         docs,
       },
@@ -69,14 +68,14 @@ exports.getOne = (Model, popOptions) =>
 exports.getAll = (Model) =>
   catchAsync(async (req, res, next) => {
     let filter = {};
-    if (req.params.movieId) filter = { movie: req.params.movieId };
+    if (req.params.movieId && req.params.userId)
+      filter = { movie: req.params.movieId, user: req.params.userId };
     const docs = await Model.find(filter);
+    // const docs = await Model.find();
 
     res.status(200).json({
       status: "success",
       results: docs.length,
-      // data: {
-        docs,
-      // },
+      docs,
     });
   });

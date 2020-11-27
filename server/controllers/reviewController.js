@@ -7,6 +7,7 @@ exports.setIds = (req, res, next) => {
   if (!req.body.user) req.body.user = req.params.userId;
   next();
 };
+
 exports.getReview = factory.getOne(Review);
 exports.getAllReviews = factory.getAll(Review);
 exports.createReview = factory.createOne(Review);

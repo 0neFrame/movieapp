@@ -25,11 +25,9 @@ const createSendToken = (user, statusCode, res) => {
     secure: true,
   };
 
-  // if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
-
-  // res.set("Access-Control-Allow-Credentials", "true");
+  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
   res.cookie("jwt", token, cookieOptions);
-  // res.localStorage("jwt", token);
+  // res.setHeader("Authorization", token);
 
   user.password = undefined;
 
@@ -45,7 +43,6 @@ const createSendToken = (user, statusCode, res) => {
 exports.singup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
-    nickname: req.body.nickname,
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
@@ -79,6 +76,8 @@ exports.protect = catchAsync(async (req, res, next) => {
     token = req.headers.authorization.split(" ")[1];
   } else if (req.cookie.jwt) {
     token = req.cookie.jwt;
+    // } else if (req.headers.Authorization) {
+    //   token = req.headers.Authorization;
   }
 
   if (!token) {
@@ -101,9 +100,9 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 
 exports.isLoggedIn = catchAsync(async (req, res, next) => {
-  if (req.body.jwt) {
+  if (req.user.jwt) {
     const decoded = await promisify(jwt.verify)(
-      req.body.jwt,
+      req.user.jwt,
       process.env.JWT_SECRET
     );
 
@@ -191,7 +190,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.user.id).select("+password");
+  const user = await User.findById(req.body.id).select("+password");
 
   if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
     return next(new AppError("CURRENT PASSWORD IS WRONG", 401));
@@ -203,3 +202,16 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
   createSendToken(user, 200, res);
 });
+
+// exports.updateUserData = catchAsync(async (req, res, next) => {
+//   const updatedUser = await User.findByIdAndUpdate(
+//     req.body.id,
+//     { name: req.body.name, email: req.body.email },
+//     { new: true, runValidators: true }
+//   );
+
+//   res.status(200).json({
+//     status: "success",
+//     user: updatedUser,
+//   });
+// });

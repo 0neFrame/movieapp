@@ -6,7 +6,7 @@
         <hr />
         <div class="row justify-content-center">
           <div class="form-group">
-            <label for="exampleEmail1">Email address</label>
+            <label for="exampleEmail1">email address</label>
             <input
               v-model.trim="email"
               placeholder="example@gmail.com"
@@ -15,12 +15,9 @@
               id="email"
               aria-describedby="emailHelp"
             />
-            <!-- <small id="emailHelp" class="form-text text-muted"
-              >We'll never share your email with anyone else</small
-            > -->
           </div>
           <div class="form-group">
-            <label for="examplePassword1">Password</label>
+            <label for="examplePassword1">password</label>
             <input
               v-model.trim="password"
               placeholder="minimum 8 characters"
@@ -38,7 +35,7 @@
           </div>
           <div class="input-group row justify-content-center">
             <div class="input-group-prepend">
-              <span class="input-group-text">Your name</span>
+              <span class="input-group-text">your name</span>
             </div>
             <input
               v-model="name"
@@ -46,21 +43,12 @@
               placeholder="Your name"
               class="form-control col-sm-3 text-center"
             />
-            <input
-              v-model.trim="nickname"
-              type="text"
-              placeholder="Your nickname (optional)"
-              class="form-control col-sm-3 text-center"
-            />
-            <small id="nickname" class="form-text text-muted"
-              >( if you want have unique ID )</small
-            >
           </div>
         </div>
       </div>
     </form>
     <button @click="singUp" type="submit" class="btn btn-outline-dark">
-      Submit
+      submit
     </button>
     <div class="spec"></div>
   </div>
@@ -87,7 +75,6 @@ export default {
       await axios
         .post("http://127.0.0.1:3333/api/v1/users/singup", {
           name: this.name,
-          nickname: this.nickname,
           email: this.email,
           password: this.password,
           passwordConfirm: this.passwordConfirm
@@ -96,10 +83,10 @@ export default {
           console.log(resp);
           this.jwt = resp.data.token;
           this.userID = resp.data.data.user._id;
-          console.log(this.jwt);
+          // console.log(this.jwt);
           window.setTimeout(() => {
-            location.assign("/");
-          }, 900);
+            location.assign(`/user/${this.userID}`);
+          }, 700);
         })
         .catch(error => {
           console.log(error);
