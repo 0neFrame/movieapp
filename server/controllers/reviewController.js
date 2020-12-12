@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 const Review = require("../models/reviewModel");
 const factory = require("../controllers/handlerFactory");
 

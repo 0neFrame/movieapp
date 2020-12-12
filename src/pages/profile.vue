@@ -1,26 +1,35 @@
 <template>
-  <div class="profile">
-    <div class="container">
-      <h1 class="media-body">UPDATE PROFILE DATA</h1>
+  <div class="profile container">
+    <div class="alert alert-success" role="alert" v-if="alertSuccess">
+      {{ serverNotification }}
     </div>
-    <div class="row justify-content-center">
+    <div class="alert alert-danger" role="alert" v-if="alertDanger">
+      {{ serverNotification }}
+    </div>
+
+    <div class="container">
+      <h1 class="media-body user-select-none">UPDATE PROFILE DATA</h1>
+    </div>
+
+    <hr />
+
+    <div class="container row justify-content-center">
       <div class="form-group">
         <label class="justify-content-center text-title media-body"
           >PERSONAL DATA FORM</label
         >
-
         <div class="input-group-prepend">
-          <span class="input-group-text">your name</span>
+          <span class="input-group-text">{{ getMe.name }}</span>
           <input
             v-model="name"
             type="text"
-            placeholder="enter name"
+            placeholder="enter data"
             class="form-control justify-content-center text-center"
           />
         </div>
 
         <div class="input-group-prepend">
-          <span class="input-group-text">email </span>
+          <span class="input-group-text">{{ getMe.email }}</span>
           <input
             v-model.trim="email"
             placeholder="example@gmail.com"
@@ -67,7 +76,7 @@
             class="form-control text-center"
             id="passwordConfirm"
           />
-          <div class="">
+          <div>
             <button
               v-on:click.prevent="updPass"
               type="submit"
@@ -76,13 +85,49 @@
               update password
             </button>
           </div>
-          <div class="media-body">
+        </div>
+      </div>
+
+      <div class="input-group justify-content-center">
+        <div class="form-group">
+          <label class="justify-content-center text-title media-body"
+            >DELETE PROFILE FORM</label
+          >
+          <input
+            v-model="emailDel"
+            type="email"
+            class="form-control text-center"
+            placeholder="email"
+          />
+          <input
+            v-model="passwordDel"
+            type="password"
+            class="form-control col-sm text-center"
+            placeholder="password"
+          />
+          <div>
             <button
-              v-on:click.prevent="delProf"
+              v-on:click.prevent="tfauth"
               type="submit"
-              class="btn btn-outline-danger media-body"
+              class="btn btn-outline-danger"
             >
               delete profile
+            </button>
+          </div>
+          <img :src="urlQRCode" alt="" />
+          <div v-if="formQRCode" class="form-row justify-content-center">
+            <input
+              v-model="codeQRCode"
+              type="text"
+              class="form-control text-center col-4"
+              placeholder="code"
+            />
+            <button
+              v-on:click.prevent="delProfile"
+              type="submit"
+              class="btn btn-outline-danger"
+            >
+              submit
             </button>
           </div>
         </div>
@@ -101,32 +146,69 @@ export default {
       name: [],
       email: [],
       password: [],
+      emailDel: [],
+      passwordDel: [],
       passwordConfirm: [],
       passwordCurrent: [],
+      alertSuccess: false,
+      alertDanger: false,
+      serverNotification: [],
+      codeQRCode: [],
+      urlQRCode: [],
+      b32secret: [],
+      formQRCode: false,
+      getMe: [],
     };
   },
-  mounted() {
+  async mounted() {
     if (localStorage.jwt) this.jwt = localStorage.jwt;
+
+    await axios
+      .get(`https://127.0.0.1:3333/api/v1/users/me`, {
+        id: localStorage.userID,
+      })
+      .then((resp) => {
+        // console.log(resp);
+        // console.log(resp.data.data.doc);
+        this.getMe = resp.data.data.doc;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   },
   methods: {
     async updData() {
       await axios
-        .patch(`http://127.0.0.1:3333/api/v1/users/updateMe`, {
-          id: this.$route.params.userId,
+        .patch(`https://127.0.0.1:3333/api/v1/users/updateMe`, {
+          id: localStorage.userID,
           name: this.name,
           email: this.email,
         })
         .then((resp) => {
           console.log(resp);
+
+          this.alertDanger = false;
+          this.serverNotification = resp.data.status;
+          this.alertSuccess = true;
         })
         .catch((error) => {
           console.log(error);
+          console.log(error.response.data);
+          console.log(error.response.data.message);
+
+          if (error.response.data.error.codeName === "DuplicateKey") {
+            this.serverNotification = "email is busy";
+            this.alertDanger = true;
+          } else {
+            this.serverNotification = error.response.data.message;
+            this.alertDanger = true;
+          }
         });
     },
     async updPass() {
       await axios
-        .patch(`http://127.0.0.1:3333/api/v1/users/updateMyPassword`, {
-          id: this.$route.params.userId,
+        .patch(`https://127.0.0.1:3333/api/v1/users/updateMyPassword`, {
+          id: localStorage.userID,
           password: this.password,
           passwordConfirm: this.passwordConfirm,
           passwordCurrent: this.passwordCurrent,
@@ -137,21 +219,59 @@ export default {
           this.password = [];
           this.passwordConfirm = [];
           this.passwordCurrent = [];
+
+          this.alertDanger = false;
+          this.serverNotification = resp.data.status;
+          this.alertSuccess = true;
         })
         .catch((error) => {
           console.log(error);
+
+          this.serverNotification = error.response.data.message;
+          this.alertDanger = true;
         });
     },
-    async delProf() {
+
+    async tfauth() {
       await axios
-        .patch(`http://127.0.0.1:3333/api/v1/users/deleteMe`, {
-          id: this.$route.params.userId,
+        .post("https://127.0.0.1:3333/api/v1/users/tfauth", {
+          email: this.emailDel,
+          password: this.passwordDel,
+        })
+        .then((resp) => {
+          console.log("resp", resp);
+          console.log(resp.data);
+          console.log(resp.data.base32secret);
+          console.log(resp.data.data_url);
+          this.b32secret = resp.data.base32secret;
+          this.urlQRCode = resp.data.data_url;
+          this.formQRCode = true;
+        })
+        .catch((error) => {
+          console.log("error", error);
+          this.serverNotification = error.response.data.message;
+          this.alertDanger = true;
+          this.alertSuccess = false;
+        });
+    },
+
+    async delProfile() {
+      await axios
+        .patch(`https://127.0.0.1:3333/api/v1/users/deleteMe`, {
+          id: localStorage.userID,
+          base32secret: this.b32secret,
+          codeQrcode: this.codeQRCode,
         })
         .then((resp) => {
           console.log("res", resp);
+          this.serverNotification = resp.data.status;
+          this.alertSuccess = true;
         })
         .catch((error) => {
           console.log(error);
+          console.log(error.response.data.message);
+          this.serverNotification = error.response.data.message;
+          this.alertDanger = true;
         });
     },
   },
@@ -163,5 +283,5 @@ export default {
 };
 </script>
 
-<style id="profile">
+<style>
 </style>

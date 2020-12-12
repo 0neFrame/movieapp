@@ -4,22 +4,22 @@ const Movie = require("../models/movieModel");
 const factory = require("../controllers/handlerFactory");
 
 exports.createMovie = catchAsync(async (req, res, next) => {
-  const userUnqID = req.body.userUnqID;
+  const arrUserID = req.body.arrUserID;
   const findMovie = await Movie.find({ id: req.body.id });
   let idUsers = [];
   let movieID;
 
   findMovie.forEach((e) => {
     movieID = e.id;
-    e.userUnqID.forEach((el) => {
-      if (el === userUnqID) idUsers.push(el);
+    e.arrUserID.forEach((el) => {
+      if (el === arrUserID) idUsers.push(el);
     });
   });
 
-  if (movieID === req.body.id && idUsers != userUnqID) {
+  if (movieID === req.body.id && idUsers != arrUserID) {
     const doc = await Movie.findOneAndUpdate(
       { id: movieID },
-      { id: movieID, $push: { userUnqID } },
+      { id: movieID, $push: { arrUserID } },
       { new: true }
     );
 

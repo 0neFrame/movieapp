@@ -1,5 +1,11 @@
 <template>
   <div class="myMovie text-values">
+    <h6 class="media-body" v-if="sortBy" v-on:click="sort">
+      sorting by titles - a -> z
+    </h6>
+    <h6 class="media-body" v-else v-on:click="sort">
+      sorting by titles - z -> a
+    </h6>
     <div v-if="movieColl" class="addNewMyMovie">
       <div class="container row col justify-content-center">
         <div
@@ -55,20 +61,23 @@ export default {
       allMovie: [],
       movieColl: false,
       haveUser: false,
+      sortBy: true,
     };
   },
   async mounted() {
     await axios
-      .get("http://127.0.0.1:3333/api/v1/movies")
+      .get("https://127.0.0.1:3333/api/v1/movies")
       .then((resp) => {
+        console.log(resp);
         let docs = resp.data.docs;
         this.allMovie = [];
         docs.forEach((el) => {
           function checkAvailability(arr, val) {
             return arr.some((arrVal) => val === arrVal);
           }
-          if (checkAvailability(el.userUnqID, localStorage.userID)) {
-            this.allMovie.unshift(el);
+          // if (checkAvailability(el.arrUserID, localStorage.userID)) {
+          if (checkAvailability(el.arrUserID, this.$route.params.userId)) {
+            this.allMovie.push(el);
           }
         });
         if (this.allMovie.length > 0) this.movieColl = true;
@@ -81,10 +90,10 @@ export default {
   methods: {
     // async delMovie() {
     //   const idMovie = await document.activeElement.value;
-    //   await axios.delete(`http://127.0.0.1:3333/api/v1/movies/${idMovie}`);
+    //   await axios.delete(`https://127.0.0.1:3333/api/v1/movies/${idMovie}`);
     //   console.log("DELETED");
     //   await axios
-    //     .get("http://127.0.0.1:3333/api/v1/movies")
+    //     .get("https://127.0.0.1:3333/api/v1/movies")
     //     .then((resp) => {
     //       let docs = resp.data.docs;
     //       this.allMovie = [];
@@ -93,7 +102,7 @@ export default {
     //           return arr.some((arrVal) => val === arrVal);
     //         }
     //         if (checkAvailability(el.userUnqID, localStorage.userID)) {
-    //           this.allMovie.unshift(el);
+    //           this.allMovie.push(el);
     //         }
     //       });
     //       if (this.allMovie.length > 0) this.movieColl = true;
@@ -103,20 +112,54 @@ export default {
     //       console.log(error);
     //     });
     // },
-    async addReview() {
-      const idMovie = await document.activeElement.value;
-      await axios
-        .post(`http://127.0.0.1:3333/api/v1/reviews`, {
-          user: localStorage.userID,
-          movie: idMovie,
-        })
-        .then((resp) => {
+    async sort() {
+      if (this.sortBy) {
+        this.sortBy = false;
+        await axios.get("https://127.0.0.1:3333/api/v1/movies").then((resp) => {
           console.log(resp);
-        })
-        .catch((error) => {
-          console.log(error);
+          let docs = resp.data.docs;
+          this.allMovie = [];
+          docs.forEach((el) => {
+            function checkAvailability(arr, val) {
+              return arr.some((arrVal) => val === arrVal);
+            }
+            if (checkAvailability(el.arrUserID, this.$route.params.userId)) {
+              this.allMovie.unshift(el);
+            }
+          });
         });
+      } else {
+        this.sortBy = true;
+        await axios.get("https://127.0.0.1:3333/api/v1/movies").then((resp) => {
+          console.log(resp);
+          let docs = resp.data.docs;
+          this.allMovie = [];
+          docs.forEach((el) => {
+            function checkAvailability(arr, val) {
+              return arr.some((arrVal) => val === arrVal);
+            }
+            if (checkAvailability(el.arrUserID, this.$route.params.userId)) {
+              this.allMovie.push(el);
+            }
+          });
+        });
+      }
     },
+    async addReview() {},
+    // const idMovie = await document.activeElement.value;
+    // await axios
+    //   .post(`https://127.0.0.1:3333/api/v1/reviews`, {
+    //     user: localStorage.userID,
+    //     // user: this.$route.params.userId,
+    //     movie: idMovie,
+    //   })
+    //   .then((resp) => {
+    //     console.log(resp);
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
+    // },
   },
 };
 </script>

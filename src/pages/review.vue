@@ -4,7 +4,7 @@
       <div class="media-body">
         <img
           :src="movieData.poster"
-          class="align-self-center mr-3 col-sm-0"
+          class="align-self-center mr-3 col-sm-0 "
           alt
         />
       </div>
@@ -77,7 +77,7 @@
                 replace
               >
                 <button class="btnMyMovie btn btn-outline-dark">
-                  back to Collaction
+                  back to COLLECTION
                 </button>
               </router-link>
             </div>
@@ -105,7 +105,7 @@ export default {
   },
   async mounted() {
     await axios
-      .get(`http://127.0.0.1:3333/api/v1/movies/${this.$route.params.movieId}`)
+      .get(`https://127.0.0.1:3333/api/v1/movies/${this.$route.params.movieId}`)
       .then((resp) => {
         let doc = resp.data.data.doc;
         console.log(doc);
@@ -117,7 +117,7 @@ export default {
 
     await axios
       .get(
-        `http://127.0.0.1:3333/api/v1/users/${this.$route.params.userId}/movies/${this.$route.params.movieId}/reviews`
+        `https://127.0.0.1:3333/api/v1/users/${this.$route.params.userId}/movies/${this.$route.params.movieId}/reviews`
       )
       .then((resp) => {
         let docs = resp.data.docs;
@@ -132,7 +132,7 @@ export default {
     async saveReview() {
       this.seen = false;
       await axios
-        .patch(`http://127.0.0.1:3333/api/v1/reviews/${this.reviewData.id}`, {
+        .patch(`https://127.0.0.1:3333/api/v1/reviews/${this.reviewData.id}`, {
           review: this.review,
           rating: this.rating,
         })
@@ -146,7 +146,7 @@ export default {
 
       await axios
         .get(
-          `http://127.0.0.1:3333/api/v1/users/${this.$route.params.userId}/movies/${this.$route.params.movieId}/reviews`
+          `https://127.0.0.1:3333/api/v1/users/${this.$route.params.userId}/movies/${this.$route.params.movieId}/reviews`
         )
         .then((resp) => {
           let docs = resp.data.docs;

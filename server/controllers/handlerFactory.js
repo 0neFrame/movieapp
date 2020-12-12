@@ -69,13 +69,29 @@ exports.getAll = (Model) =>
   catchAsync(async (req, res, next) => {
     let filter = {};
     if (req.params.movieId && req.params.userId)
-      filter = { movie: req.params.movieId, user: req.params.userId };
-    const docs = await Model.find(filter);
-    // const docs = await Model.find();
+      filter = {
+        movie: req.params.movieId,
+        user: req.params.userId,
+      };
 
-    res.status(200).json({
-      status: "success",
-      results: docs.length,
-      docs,
-    });
+    await Model.find(filter)
+      .sort("title")
+      .exec((err, docs) => {
+        // console.log("err", err); 
+        // console.log("docs", docs);
+
+        res.status(200).json({
+          status: "success",
+          results: docs.length,
+          docs,
+        });
+      });
+
+    // const doc = await Model.find(filter)
+
+    // res.status(200).json({
+    //   status: "success",
+    //   results: docs.length,
+    //   docs,
+    // });
   });

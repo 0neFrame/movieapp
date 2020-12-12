@@ -17,21 +17,21 @@
         <router-link
           :to="{ name: 'user', params: { userId: lsUserID }, name: 'movies' }"
           replace
-          >MOVIES
+          >COLLECTION
         </router-link>
-        <router-link class="login" to="/">
+        <router-link to="/">
           <button
             type="submit"
-            class="btnMyMovie btn btn-outline-dark"
+            class="btnMyMovie btn btn-outline-dark mb-2"
             @click="logOut"
           >
             LOG OUT
           </button>
         </router-link>
       </a>
-      <a class="login" v-else>
-        <router-link id="login" to="/login">
-          <button type="submit" class="btnMyMovie btn btn-outline-dark">
+      <a v-else class="d-flex">
+        <router-link to="/login" class="ml-auto p-2">
+          <button type="submit" class="btnMyMovie btn btn-outline-dark mb-2">
             LOG IN
           </button>
         </router-link>
@@ -42,8 +42,7 @@
 </template>
 
 <script>
-// import axios from "axios";
-// import router from "./router/index";
+import axios from "axios";
 
 export default {
   name: "App",
@@ -63,20 +62,9 @@ export default {
       }, 1);
     },
   },
-  // mounted() {
-  //   console.log(this.$route);
-  //   console.log(this.$route.fullPath);
-  //   console.log(this.$route.params);
-  // },
-  // async mounted() {
-  //   await axios
-  //     .post("http://127.0.0.1:3333/api/v1/movies", {
-  //       jwt: localStorage.jwt
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //     });
-  // }
+  mounted() {
+    axios.defaults.headers.common["Authorization"] = this.jwt;
+  },
 };
 </script>
 
@@ -97,19 +85,12 @@ export default {
   );
 }
 
-.login {
-  display: flex;
-  height: 15px;
-  flex-direction: column;
-  align-self: center;
-}
+/* .login {
+  text-align: right;
+} */
 
 #nav {
-  /* display: flex;
-  align-items: center;
-  height: 300px; */
-
-  padding: 30px;
+  padding: 10px;
 }
 
 #nav a {

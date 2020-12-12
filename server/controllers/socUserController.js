@@ -1,10 +1,8 @@
 /* eslint-disable no-unused-vars */
-const factory = require("../controllers/handlerFactory");
+const factory = require("./handlerFactory");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/AppError");
-const User = require("../models/userModel");
-
-const speakeasy = require("speakeasy");
+const socUser = require("../models/socUserModel");
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -24,11 +22,14 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     return next(new AppError("THIS ROUTE FOR UPDATE DATA", 400));
   }
   const filteredBody = filterObj(req.body, "name", "email");
-  const updatedUser = await User.findByIdAndUpdate(req.body.id, filteredBody, {
-    new: true,
-    runValidators: true,
-  });
-
+  const updatedUser = await socUser.findByIdAndUpdate(
+    req.body.id,
+    filteredBody,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
   res.status(200).json({
     status: "success",
     data: {
@@ -38,19 +39,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteMe = catchAsync(async (req, res, next) => {
-  const userIdDelete = req.body.id;
-
-  const verified = speakeasy.totp.verify({
-    secret: req.body.base32secret,
-    encoding: "hex",
-    token: req.body.codeQrcode,
-  });
-
-  if (!verified) {
-    return next(new AppError(`INCORRECT DATA`, 401));
-  }
-
-  await User.findByIdAndUpdate(userIdDelete, { active: false });
+  await socUser.findByIdAndUpdate(req.body.id, { active: false });
 
   res.status(204).json({
     status: "success",
@@ -59,8 +48,8 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
 });
 
 // exports.getUser = factory.getOne(User, { path: "reviews" });
-exports.getUser = factory.getOne(User);
-exports.getAllUsers = factory.getAll(User);
-exports.createUser = factory.createOne(User);
-exports.updateUser = factory.updateOne(User);
-exports.deleteUser = factory.deleteOne(User);
+exports.getSocUser = factory.getOne(socUser);
+exports.getAllSocUsers = factory.getAll(socUser);
+exports.createSocUser = factory.createOne(socUser);
+exports.updateSocUser = factory.updateOne(socUser);
+exports.deleteSocUser = factory.deleteOne(socUser);

@@ -13,7 +13,7 @@ const movieSchema = new mongoose.Schema(
 
     title: String,
 
-    userUnqID: {
+    arrUserID: {
       type: Array,
     },
     // review: {

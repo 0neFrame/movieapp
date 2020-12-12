@@ -2,6 +2,8 @@
 const { promisify } = require("util");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
+const speakeasy = require("speakeasy");
+const QRCode = require("qrcode");
 
 const catchAsync = require("../utils/catchAsync");
 const sendEmail = require("../utils/email");
@@ -27,7 +29,6 @@ const createSendToken = (user, statusCode, res) => {
 
   if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
   res.cookie("jwt", token, cookieOptions);
-  // res.setHeader("Authorization", token);
 
   user.password = undefined;
 
@@ -52,6 +53,31 @@ exports.singup = catchAsync(async (req, res, next) => {
   createSendToken(newUser, 201, res);
 });
 
+exports.tfauth = catchAsync(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return next(new AppError("PROVIDE EMAIL/PASSWORD", 401));
+  }
+
+  const user = await User.findOne({ email }).select("+password");
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    return next(new AppError(`INCORRECT EMAIL/PASSWORD`, 401));
+  }
+
+  const secret = speakeasy.generateSecret({ length: 36 });
+  user.two_factor_temp_secret = secret.hex;
+  const base32secret = user.two_factor_temp_secret;
+  QRCode.toDataURL(secret.otpauth_url, (err, data_url) => {
+    // console.log(data_url);
+    res.status(200).json({
+      status: "success",
+      data_url,
+      base32secret,
+    });
+  });
+});
+
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -64,6 +90,15 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError(`INCORRECT EMAIL/PASSWORD`, 401));
   }
 
+  const verified = speakeasy.totp.verify({
+    secret: req.body.base32secret,
+    encoding: "hex",
+    token: req.body.codeQrcode,
+  });
+  if (!verified) {
+    return next(new AppError(`INCORRECT DATA`, 401));
+  }
+
   createSendToken(user, 200, res);
 });
 
@@ -74,10 +109,10 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith("Bearer")
   ) {
     token = req.headers.authorization.split(" ")[1];
-  } else if (req.cookie.jwt) {
-    token = req.cookie.jwt;
-    // } else if (req.headers.Authorization) {
-    //   token = req.headers.Authorization;
+    // } else if (req.cookie.jwt) {
+    //   token = req.cookie.jwt;
+  } else if (req.headers.authorization) {
+    token = req.headers.authorization;
   }
 
   if (!token) {
@@ -100,9 +135,10 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 
 exports.isLoggedIn = catchAsync(async (req, res, next) => {
-  if (req.user.jwt) {
+  // console.log(req.headers.authorization);
+  if (req.headers.authorization) {
     const decoded = await promisify(jwt.verify)(
-      req.user.jwt,
+      req.headers.authorization,
       process.env.JWT_SECRET
     );
 
@@ -139,11 +175,11 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   const resetToken = user.createPasswordResetToken();
   await user.save({ validateBeforeSave: false });
 
-  const resetURL = `${req.protocol}://${req.get(
-    "host"
-  )}/api/v1/users/resetPassword/${resetToken}`;
+  // const resetURL = `${req.protocol}://${req.get("host")}
+  // /api/v1/users/resetPassword/${resetToken}`;
+  const resetURL = `${req.protocol}://localhost:3334/resetPassword/${resetToken}`;
 
-  const message = `You forgot password? Press URL => ${resetURL}.\nIf you didn't forgot your password, please ignore this email!`;
+  const message = `You forgot password? Press URL => ${resetURL}\nIf you didn't forgot your password, please ignore this email!`;
 
   try {
     await sendEmail({
@@ -202,16 +238,3 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
   createSendToken(user, 200, res);
 });
-
-// exports.updateUserData = catchAsync(async (req, res, next) => {
-//   const updatedUser = await User.findByIdAndUpdate(
-//     req.body.id,
-//     { name: req.body.name, email: req.body.email },
-//     { new: true, runValidators: true }
-//   );
-
-//   res.status(200).json({
-//     status: "success",
-//     user: updatedUser,
-//   });
-// });

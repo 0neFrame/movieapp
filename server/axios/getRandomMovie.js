@@ -8,6 +8,7 @@ routerS.post("/r", async (req, res) => {
       `${process.env.VUE_APP_API_URL_TITLE}/?apikey=${process.env.VUE_APP_API_KEY}`,
       {
         params: {
+          // type: req.body.type,
           i: req.body.i,
         },
       }
@@ -17,7 +18,9 @@ routerS.post("/r", async (req, res) => {
       console.log(`Response: ${resp.data.Response}`);
 
       const data = resp.data;
-      if (data.Response === "True") return res.status(201).json(data);
+      // if (data.Response === "True") return
+
+      res.status(201).json(data);
 
       // tt1223334 + forEach
       // tt1223334 += 1

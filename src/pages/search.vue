@@ -1,18 +1,19 @@
 <template id="tempo">
   <div class="search container">
-    <form class="form" name="form1" v-on:submit.prevent>
+    <div class="alert alert-success" role="alert" v-if="alertSuccess">
+      {{ serverNotification }}
+    </div>
+    <div class="alert alert-danger" role="alert" v-if="alertDanger">
+      {{ serverNotification }}
+    </div>
+
+    <form class="form media-body" name="form1" v-on:submit.prevent>
       <div class="form-group col-12">
         <label
           for="input1"
           class="row justify-content-center text-title user-select-none"
           >TRY TO SEARCH MOVIE</label
         >
-        <button
-          v-on:click="randomMovie"
-          class="btn btn-outline-dark text-values"
-        >
-          random
-        </button>
       </div>
       <div class="container text-values">
         <div class="form-row justify-content-center">
@@ -36,15 +37,38 @@
           </div>
           <div class>
             <button
-              v-on:click="searchMovie"
+              v-on:click.enter="searchMovie"
               class="btn btn-outline-dark text-values"
             >
               search
+            </button>
+            <button
+              v-on:click="randomMovie"
+              class="btn btn-outline-light text-values"
+            >
+              random
             </button>
           </div>
         </div>
       </div>
     </form>
+    <div class="media-body">
+      <b-alert
+        :show="dismissCountDown"
+        dismissible
+        variant="warning"
+        @dismissed="dismissCountDown = 0"
+        @dismiss-count-down="countDownChanged"
+      >
+        <p>movie will be found after few seconds...</p>
+        <b-progress
+          variant="warning"
+          :max="dismissSecs"
+          :value="dismissCountDown"
+          height="4px"
+        ></b-progress>
+      </b-alert>
+    </div>
     <transition name="soon">
       <h1
         class="spec text-title text-center user-select-none"
@@ -91,11 +115,11 @@
           </dl>
           <div class="btntoadd">
             <button
-              v-if="user"
+              v-if="jwt"
               v-on:click.prevent="addMovie"
               class="btnMyMovie btn btn-outline-dark"
             >
-              add in collaction
+              add in COLLECTION
             </button>
           </div>
           <!-- <div v-else class="btnfordel">
@@ -123,84 +147,123 @@ export default {
       years: [],
       movieValue: [],
       clickBtn: true,
-      user: localStorage.jwt,
+      jwt: localStorage.jwt,
+      dismissSecs: 15,
+      dismissCountDown: 0,
+      showDismissibleAlert: false,
+      alertSuccess: false,
+      alertDanger: false,
+      serverNotification: [],
     };
   },
   // async mounted() {
-  //   await axios
-  //     .post("http://127.0.0.1:3333/api/v1/users/login", {
-  //       jwt: localStorage.jwt
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //     });
+  //   axios.defaults.headers.common["Authorization"] = this.jwt;
   // },
   methods: {
+    countDownChanged(dismissCountDown) {
+      this.dismissCountDown = dismissCountDown;
+    },
     async addMovie() {
       await axios
-        .post("http://127.0.0.1:3333/api/v1/movies", {
+        .post("https://127.0.0.1:3333/api/v1/movies", {
           id: this.movieValue.imdbID,
           poster: this.movieValue.Poster,
           title: this.movieValue.Title,
           plot: this.movieValue.Plot,
-          jwt: localStorage.jwt,
-          userUnqID: localStorage.userID,
+          arrUserID: localStorage.userID,
         })
         .then((resp) => {
           console.log(resp);
-          this.movieValue = resp.data;
+          let data = resp.data;
+          this.serverNotification = "movie added to COLLECTION";
+          this.alertSuccess = true;
+          this.alertDanger = false;
+
+          this.movieValue = data;
           this.clickBtn = false;
+          // console.log("this.movieValue", this.movieValue.data);
+        })
+        .catch((error) => {
+          console.log(error);
+          console.log(error.response);
+          if (error.response.data.error.keyPattern.id === 1) {
+            this.serverNotification = "this movie in COLLECTION";
+            this.alertDanger = true;
+          } else {
+            this.serverNotification = error;
+            this.alertDanger = true;
+            this.alertSuccess = false;
+          }
+        });
+
+      await axios
+        .post(`https://127.0.0.1:3333/api/v1/reviews`, {
+          user: localStorage.userID,
+          movie: this.movieValue.data.docs._id,
+        })
+        .then((resp) => {
+          console.log(resp);
+          // console.log("user:", localStorage.userID);
+          // console.log("movie:", this.movieValue.data.docs._id);
         })
         .catch((error) => {
           console.log(error);
         });
     },
 
-    // async delMovie() {
-    //   this.clickBtn = true;
-
-    //   console.log(`del movie! - 1`);
-
-    //   await axios
-    //     .post("http://127.0.0.1:3333/search/del", {
-    //       id: this.movieValue.imdbID
-    //     })
-    //     .then(resp => {
-    //       console.log(`post ID movie: ${this.movieValue.imdbID}, ${resp}`);
-    //       console.log(`del movie! - 2`);
-    //     })
-    //     .catch(error => {
-    //       console.log(error);
-    //     });
-    // },
-
     async searchMovie() {
       await axios
-        .post("http://127.0.0.1:3333/search", {
+        .post("https://127.0.0.1:3333/search", {
           t: this.titles,
           y: this.years,
         })
         .then((resp) => {
-          console.log(`frontend post: ${resp.data.Title}, ${resp.data.Year}`);
+          console.log("resp", resp.data.Error);
+          let data = resp.data;
+          if (data.Error) {
+            this.serverNotification = resp.data.Error;
+            this.alertDanger = true;
+          } else {
+            this.alertDanger = false;
+            this.alertSuccess = false;
+          }
+
           this.movieValue = resp.data;
         })
         .catch((error) => {
           console.log(error);
+          if (error) {
+            this.serverNotification = error;
+            this.alertDanger = true;
+          } else {
+            this.alertDanger = false;
+            this.alertSuccess = false;
+          }
         });
     },
 
     async randomMovie() {
-      await axios
-        .post("http://127.0.0.1:3333/search/r", {
-          i: `tt${Math.floor(Math.random() * 10000000 + 1)}`,
-        })
-        .then((resp) => {
-          this.movieValue = resp.data;
-          console.log(`frontend post: ${resp.data.Title}, ${resp.data.Year}`);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      this.alertDanger = false;
+      this.alertSuccess = false;
+      this.dismissCountDown = this.dismissSecs;
+      this.movieValue = [];
+      // console.log(`value: ${this.movieValue.Title}, ${this.movieValue.Year}`);
+      // console.log(`response: ${this.movieValue.Response}`);
+      do {
+        await axios
+          .post("https://127.0.0.1:3333/search/r", {
+            i: `tt${Math.floor(Math.random() * 10000000 + 1)}`,
+          })
+          .then((resp) => {
+            // console.log(`frontend post: ${resp.data.Title}, ${resp.data.Year}`);
+            // console.log(`response: ${this.movieValue.Response}`);
+            this.movieValue = resp.data;
+            if (this.movieValue.Response === "True") this.dismissCountDown = 0;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } while (this.movieValue.Response === "False");
     },
   },
 };

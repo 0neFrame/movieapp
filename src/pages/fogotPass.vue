@@ -1,14 +1,11 @@
 <template>
   <div class="singup">
-    <div class="alert alert-danger" role="alert" v-if="alertDanger">
-      {{ serverNotification }}
-    </div>
     <form>
-      <div class="container text-values">
-        <h1>Create Account</h1>
+      <div class="container text-values media-body">
+        <h1 class="media-body user-select-none">Reset Password</h1>
         <hr />
-        <div class="row justify-content-center">
-          <div class="form-group">
+        <div class="row justify-content-center media-body">
+          <!-- <div class="form-group">
             <label for="exampleEmail1">email address</label>
             <input
               v-model.trim="email"
@@ -18,9 +15,9 @@
               id="email"
               aria-describedby="emailHelp"
             />
-          </div>
-          <div class="form-group">
-            <label for="examplePassword1">password</label>
+          </div> -->
+          <div class="form-group ">
+            <label class="user-select-none">new password</label>
             <input
               v-model.trim="password"
               placeholder="minimum 8 characters"
@@ -32,25 +29,25 @@
               v-model.trim="passwordConfirm"
               placeholder="confirm password"
               type="password"
-              class="form-control text-center"
+              class="form-control text-center media-body"
               id="passwordConfirm"
             />
           </div>
-          <div class="input-group row justify-content-center">
+          <!-- <div class="input-group row justify-content-center">
             <div class="input-group-prepend">
               <span class="input-group-text">your name</span>
             </div>
             <input
               v-model="name"
               type="text"
-              placeholder="minimum 2 characters"
-              class="form-control col-sm-4 text-center"
+              placeholder="Your name"
+              class="form-control col-sm-3 text-center"
             />
-          </div>
+          </div> -->
         </div>
       </div>
     </form>
-    <button @click="singUp" type="submit" class="btn btn-outline-dark">
+    <button @click="resetPass" type="submit" class="btn btn-outline-dark">
       submit
     </button>
     <div class="spec"></div>
@@ -61,7 +58,7 @@
 import axios from "axios";
 
 export default {
-  name: "singup",
+  name: "resetPass",
   data() {
     return {
       name: [],
@@ -71,38 +68,30 @@ export default {
       passwordConfirm: [],
       jwt: [],
       userID: [],
-      alertDanger: false,
-      serverNotification: [],
     };
   },
   methods: {
-    async singUp() {
+    async resetPass() {
       await axios
-        .post("https://127.0.0.1:3333/api/v1/users/singup", {
-          name: this.name,
-          email: this.email,
-          password: this.password,
-          passwordConfirm: this.passwordConfirm,
-        })
+        .patch(
+          `http://127.0.0.1:3333/api/v1/users/resetPassword/${this.$route.params.token}`,
+          {
+            password: this.password,
+            passwordConfirm: this.passwordConfirm,
+          }
+        )
         .then((resp) => {
           console.log(resp);
+          console.log(resp.data);
           this.jwt = resp.data.token;
           this.userID = resp.data.data.user._id;
           // console.log(this.jwt);
-          window.setTimeout(() => {
-            location.assign(`/search`);
-          }, 1);
+          // window.setTimeout(() => {
+          //   location.assign(`/user/${this.userID}`);
+          // }, 1);
         })
         .catch((error) => {
           console.log(error);
-          console.log(error.response.data.error._message);
-
-          // this.serverNotification = error.response.data.message
-          //   .replace(", ", `\n`)
-          //   .replace(", ", `\n`)
-          //   .replace(", ", `\n`);
-          this.serverNotification = error.response.data.error._message;
-          this.alertDanger = true;
         });
     },
   },

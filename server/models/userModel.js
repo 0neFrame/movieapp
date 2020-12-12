@@ -5,6 +5,11 @@ const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema(
   {
+    createdAt: {
+      type: Date,
+      default: Date.now(),
+    },
+
     name: {
       type: String,
       required: [true, "Name must have!"],
@@ -63,11 +68,6 @@ const userSchema = new mongoose.Schema(
       default: true,
       select: true,
     },
-    // movie: {
-    //   type: mongoose.Schema.ObjectId,
-    //   ref: "Movie",
-    // },
-
   },
   {
     toJSON: { virtuals: true },
