@@ -3,7 +3,10 @@ const mongoose = require("mongoose");
 
 const socUserSchema = new mongoose.Schema(
   {
-    id: String,
+    id: {
+      type: String,
+      unique: true,
+    },
 
     token: String,
 

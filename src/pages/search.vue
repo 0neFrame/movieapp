@@ -8,16 +8,16 @@
     </div>
 
     <form class="form media-body" name="form1" v-on:submit.prevent>
-      <div class="form-group col-12">
+      <div class="form-group">
         <label
           for="input1"
           class="row justify-content-center text-title user-select-none"
           >TRY TO SEARCH MOVIE</label
         >
       </div>
-      <div class="container text-values">
+      <div class="text-values">
         <div class="form-row justify-content-center">
-          <div class="col-4">
+          <div class="col-sm col-md-3 col-lg-3 col-xl-3 col-fluid-3">
             <input
               v-model="titles"
               type="text"
@@ -26,7 +26,7 @@
               placeholder="title"
             />
           </div>
-          <div class="col-3">
+          <div class="col-sm col-md-2 col-lg-2 col-xl-2 col-fluid-1">
             <input
               type="number"
               v-model.number="years"
@@ -35,7 +35,7 @@
               placeholder="year"
             />
           </div>
-          <div class>
+          <div v-if="!dismissCountDown">
             <button
               v-on:click.enter="searchMovie"
               class="btn btn-outline-dark text-values"
@@ -78,17 +78,13 @@
         <h5>maybe...</h5>
       </h1>
     </transition>
-    <transition name="valM">
-      <div v-if="movieValue.Title" class="media text-values">
-        <img
-          :src="movieValue.Poster"
-          class="align-self-center mr-3 col-sm-0"
-          alt
-        />
+    <transition name="smoothAnim">
+      <div v-if="movieValue.Title" class="media-body media text-values">
         <div class="media-body">
-          <h1 class="mt-0">{{ movieValue.Title }}</h1>
-          <dl class="row container">
-            <dt class="col-sm-2 con-sm-1" v-if="movieValue.Title">
+          <img class="imgPadd" :src="movieValue.Poster" alt />
+          <h1 class="mt-0 media-body">{{ movieValue.Title }}</h1>
+          <dl class="row row-cols-2 media-body container">
+            <dt class="col-5 text-right" v-if="movieValue.Title">
               <p>TYPE</p>
               <p>DIRECTOR</p>
               <p>GENRE</p>
@@ -100,7 +96,7 @@
               <p>IMDB_RATE</p>
               <p>METASCORE</p>
             </dt>
-            <dd class="col-sm-10 row-sm-1" v-bind="movieValue">
+            <dd class="col-7 text-left" v-bind="movieValue">
               <p>{{ movieValue.Type }}</p>
               <p>{{ movieValue.Director }}</p>
               <p>{{ movieValue.Genre }}</p>
@@ -163,14 +159,16 @@ export default {
     countDownChanged(dismissCountDown) {
       this.dismissCountDown = dismissCountDown;
     },
+
     async addMovie() {
       await axios
         .post("https://127.0.0.1:3333/api/v1/movies", {
-          id: this.movieValue.imdbID,
+          arrUserID: localStorage.userID,
           poster: this.movieValue.Poster,
           title: this.movieValue.Title,
+          year: this.movieValue.Year,
           plot: this.movieValue.Plot,
-          arrUserID: localStorage.userID,
+          id: this.movieValue.imdbID,
         })
         .then((resp) => {
           console.log(resp);
@@ -181,7 +179,10 @@ export default {
 
           this.movieValue = data;
           this.clickBtn = false;
-          // console.log("this.movieValue", this.movieValue.data);
+          console.log(
+            "this.movieValue.data.doc._id:",
+            this.movieValue.data.doc._id
+          );
         })
         .catch((error) => {
           console.log(error);
@@ -199,10 +200,10 @@ export default {
       await axios
         .post(`https://127.0.0.1:3333/api/v1/reviews`, {
           user: localStorage.userID,
-          movie: this.movieValue.data.docs._id,
+          movie: this.movieValue.data.doc._id,
         })
         .then((resp) => {
-          console.log(resp);
+          console.log("reviews", resp);
           // console.log("user:", localStorage.userID);
           // console.log("movie:", this.movieValue.data.docs._id);
         })
@@ -218,7 +219,6 @@ export default {
           y: this.years,
         })
         .then((resp) => {
-          console.log("resp", resp.data.Error);
           let data = resp.data;
           if (data.Error) {
             this.serverNotification = resp.data.Error;
@@ -294,10 +294,8 @@ export default {
   margin: 20px 0 0 0;
 }
 
-@media (max-width: 475px) {
-  .container {
-    max-width: min-content;
-  }
+.imgPadd {
+  margin: 0 0 20px 0;
 }
 
 .soon-enter-active {
@@ -308,11 +306,11 @@ export default {
   transform: translateX(150px);
   opacity: 0;
 }
-.valM-enter-active {
+.smoothAnim-enter-active {
   transition: 0.9s;
 }
-.valM-enter,
-.valM-leave-to {
+.smoothAnim-enter,
+.smoothAnim-leave-to {
   transform: translateX(-50px);
   opacity: 0;
 }

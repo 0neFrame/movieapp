@@ -1,7 +1,4 @@
 /* eslint-disable no-undef */
-
-// const bodyParser = require("body-parser");
-
 const rateLimit = require("express-rate-limit");
 const express = require("express");
 const morgan = require("morgan");
@@ -24,8 +21,10 @@ const getRandomMovie = require("./axios/getRandomMovie");
 // FACEBOOK STAGE 1 - START
 require("dotenv").config();
 const passport = require("passport");
-const socUser = require("./models/socUserModel");
 const Strategy = require("passport-facebook").Strategy;
+const bodyParser = require("body-parser");
+const cookieSession = require("cookie-session");
+const socUser = require("./models/socUserModel");
 // FACEBOOK STAGE 1 - END
 
 // MAIN STAGE
@@ -54,7 +53,24 @@ appS.use((req, res, next) => {
 });
 
 // FACEBOOK STAGE 2 - START
-// appS.use(bodyParser.json())
+// appS.use(bodyParser.urlencoded({ extended: false }));
+// appS.use(bodyParser.json());
+appS.use(
+  cookieSession({
+    name: "bla-bla-land",
+    keys: ["key1", "key2"],
+  })
+);
+
+passport.serializeUser((user, done) => {
+  console.log("serializeUser:", user);
+  return done(null, user);
+});
+passport.deserializeUser((user, done) => {
+  console.log("deserializeUser:", user);
+  return done(null, user);
+});
+
 passport.use(
   new Strategy(
     {
@@ -62,16 +78,16 @@ passport.use(
       clientSecret: process.env.CLIENT_SECRET,
       callbackURL: "/api/v1/auth/return",
     },
-    (accessToken, refreshToken, profile, cb) => {
+    (accessToken, refreshToken, profile, done) => {
       // console.log("refreshToken", refreshToken);
       // console.log("accessToken", accessToken);
       // console.log("profile", profile);
+
       process.nextTick(() => {
         socUser.findOne({ id: profile.id }, (err, user) => {
-          if (err) return cb(err);
+          if (err) return done(err);
           if (user) {
-            // console.log("find user:", user);
-            return cb(null, user);
+            return done(null, user);
           } else {
             let newUser = new socUser();
             newUser.id = profile.id;
@@ -81,7 +97,7 @@ passport.use(
             newUser.save((err) => {
               console.log("create NEW user:", newUser);
               if (err) console.log(err);
-              return cb(null, newUser);
+              return done(null, newUser);
             });
           }
         });

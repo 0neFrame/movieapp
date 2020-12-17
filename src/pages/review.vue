@@ -1,38 +1,35 @@
 <template id="tempo">
   <div class="container">
+    <img class="align-self-center" :src="movieData.poster" alt />
     <div class="media text-values">
-      <div class="media-body">
-        <img
-          :src="movieData.poster"
-          class="align-self-center mr-3 col-sm-0 "
-          alt
-        />
-      </div>
-      <div class="media-body">
-        <h1 class="mt-0">{{ movieData.title }}</h1>
-        <div class="container">
-          <div v-if="seen">
+      <div class="col">
+        <h1 class="col media-body">
+          {{ movieData.title }} ({{ movieData.year }})
+        </h1>
+        <div class="row row-cols-1 justify-content-center">
+          <div
+            class="col-sm col-md-4 col-lg-4 col-xl-4 col-fluid-3"
+            v-if="seen"
+          >
             <b-form-rating v-model="rating" stars="10"></b-form-rating>
             <p v-if="rating" class="mt-2">My rating: {{ rating }}</p>
             <p v-else class="mt-2">Haven't rating</p>
           </div>
-          <div>
-            <div v-if="!seen">
-              <b-form-rating
-                v-model="reviewData.rating"
-                stars="10"
-                disabled
-              ></b-form-rating>
-              <p v-if="reviewData.rating" class="mt-2">
-                My rating: {{ reviewData.rating }}
-              </p>
-              <p v-else class="mt-2">Haven't rating</p>
-            </div>
+          <div class="col-sm col-md-4 col-lg-4 col-xl-4 col-fluid-3" v-else>
+            <b-form-rating
+              v-model="reviewData.rating"
+              stars="10"
+              disabled
+            ></b-form-rating>
+            <p v-if="reviewData.rating" class="mt-2">
+              My rating: {{ reviewData.rating }}
+            </p>
+            <p v-else class="mt-2">Haven't rating</p>
           </div>
 
-          <div class="container">
+          <div class="col">
             <transition name="valM">
-              <p v-if="!seen" class="container text-break text-left">
+              <p v-if="!seen" class="text-break text-left">
                 My review: {{ reviewData.review }}
               </p>
             </transition>
@@ -42,13 +39,13 @@
               class="overflow-auto"
               type="text"
               maxlength="300"
-              cols="50"
+              cols="27"
               rows="10"
-              placeholder="enter your text - max length = 300"
+              placeholder="max length - 300"
             />
           </div>
 
-          <div v-if="this.$route.params.userId === lsUserID">
+          <div class="col" v-if="this.$route.params.userId === lsUserID">
             <button
               v-if="seen"
               v-on:click.prevent="saveReview"
@@ -120,8 +117,9 @@ export default {
         `https://127.0.0.1:3333/api/v1/users/${this.$route.params.userId}/movies/${this.$route.params.movieId}/reviews`
       )
       .then((resp) => {
-        let docs = resp.data.docs;
-        this.reviewData = docs[0];
+        let doc = resp.data.doc;
+        this.reviewData = doc[0];
+        console.log("reviewData: ", resp);
       })
       .catch((error) => {
         console.log(error);
@@ -139,6 +137,7 @@ export default {
         .then((resp) => {
           let doc = resp.data.data.doc;
           this.reviewData = doc;
+          console.log(doc);
         })
         .catch((error) => {
           console.log(error);
@@ -149,8 +148,8 @@ export default {
           `https://127.0.0.1:3333/api/v1/users/${this.$route.params.userId}/movies/${this.$route.params.movieId}/reviews`
         )
         .then((resp) => {
-          let docs = resp.data.docs;
-          this.reviewData = docs[0];
+          let doc = resp.data.doc;
+          this.reviewData = doc[0];
         })
         .catch((error) => {
           console.log(error);
@@ -178,11 +177,11 @@ export default {
 }
 
 textarea {
-  padding: 12px 20px;
+  padding: 10px 10px 10px 10px;
   box-sizing: border-box;
-  border: 2px solid #ccc;
-  border-radius: 4px;
-  background-color: #f8f8f8;
+  border: 3px solid rgb(0, 0, 0);
+  border-radius: 1px;
+  background-color: #ffffffc7;
 }
 
 .btnMyMovie {

@@ -6,7 +6,7 @@ const routerS = express.Router();
 
 routerS.route("/").get(movieController.getAllMovies);
 
-// routerS.route("/:id").get(movieController.getMovie);
+routerS.route("/:id").get(movieController.getMovie);
 
 routerS.use(authController.isLoggedIn);
 
@@ -20,7 +20,7 @@ routerS
 
 routerS
   .route("/:id")
-  .get(movieController.getMovie)
+  // .get(movieController.getMovie)
   .patch(authController.restrictTo("user"), movieController.updateMovie)
   .delete(authController.restrictTo("user"), movieController.deleteMovie);
 

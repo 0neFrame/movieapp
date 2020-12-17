@@ -1,67 +1,49 @@
-// const appS = express();
-// const tls = require("tls");
-
 const passport = require("passport");
 const express = require("express");
 const routerS = express.Router();
 
 const socUserController = require("../controllers/socUserController");
 const authController = require("../controllers/authController");
-const socUser = require("../models/socUserModel");
+// const socUser = require("../models/socUserModel");
 
-passport.serializeUser((user, cb) => {
-  console.log("serializeUser:", user);
-  console.log("serializeUserID:", user.id);
-  return cb(null, user.id);
-});
-passport.deserializeUser((id, cb) => {
-  socUser.findById(id, (err, user) => {
-    console.log("deserializeId:", id);
-    console.log("deserializeErr:", err);
-    console.log("deserializeUser:", user);
-    cb(err, user);
-  });
-});
+const isLoggedIn = (req, res, next) => {
+  if (req.user) {
+    next();
+  } else {
+    res.sendStatus(401);
+  }
+};
 
-routerS.route("/facebook").get(passport.authenticate("facebook"));
-
-routerS.route("/return").get(
+routerS.get("/facebook", passport.authenticate("facebook"));
+routerS.get(
+  "/return",
   passport.authenticate("facebook", {
     successRedirect: "/api/v1/auth/profile",
-    // failureRedirect: "/api/v1/auth/failed",
-  }),
-  (err, user, info) => {
-    console.log("err -", err);
-    console.log("user -", user);
-    console.log("info -", info);
-  }
+  })
 );
-routerS.route("/profile").get(
-  /*require("connect-ensure-login").ensureLoggedIn(),*/ (req, res) => {
-    console.log("success /profile:", this.user);
-    console.log("body:", req.body);
-
-    res.status(200).json({
-      status: "success",
-      data: { user: req.user },
-    });
-    // res.render("profile", { user: req.user });
-  }
+routerS.get(
+  "/profile",
+  /*isLoggedIn,*/
+  // authController.facebookLogin,
+  (req, res) => {
+    req.body.user = req.user;
+    // console.log("req.body.user", req.body.user);
+    res.redirect("http://localhost:3334/socprofile");
+  },
 );
-// routerS.route("/failed").get((req, res) => {
-//   // console.log("success /:", req.user);
-
-//   res.status(400).json({
-//     msg: "login failed",
-//   });
-// });
+routerS.get("/profile-fb", isLoggedIn, (req, res) => {
+  res.status(200).json({
+    status: "success",
+    data: req.user,
+  });
+});
 
 routerS.use(authController.protect);
 
 routerS.get("/me", socUserController.getMe, socUserController.getSocUser);
 routerS.patch("/deleteMe", socUserController.deleteMe);
 
-// routerS.use(authController.restrictTo("admin"));
+routerS.use(authController.restrictTo("admin"));
 
 routerS
   .route("/")

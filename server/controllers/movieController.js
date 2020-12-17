@@ -30,12 +30,12 @@ exports.createMovie = catchAsync(async (req, res, next) => {
       },
     });
   } else {
-    const docs = await Movie.create(req.body);
+    const doc = await Movie.create(req.body);
 
     res.status(201).json({
       status: "success",
       data: {
-        docs,
+        doc,
       },
     });
   }

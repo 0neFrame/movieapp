@@ -69,9 +69,9 @@ export default {
       .get("https://127.0.0.1:3333/api/v1/movies")
       .then((resp) => {
         console.log(resp);
-        let docs = resp.data.docs;
+        let doc = resp.data.doc;
         this.allMovie = [];
-        docs.forEach((el) => {
+        doc.forEach((el) => {
           function checkAvailability(arr, val) {
             return arr.some((arrVal) => val === arrVal);
           }
@@ -95,9 +95,9 @@ export default {
     //   await axios
     //     .get("https://127.0.0.1:3333/api/v1/movies")
     //     .then((resp) => {
-    //       let docs = resp.data.docs;
+    //       let doc = resp.data.doc;
     //       this.allMovie = [];
-    //       docs.forEach((el) => {
+    //       doc.forEach((el) => {
     //         function checkAvailability(arr, val) {
     //           return arr.some((arrVal) => val === arrVal);
     //         }
@@ -117,9 +117,9 @@ export default {
         this.sortBy = false;
         await axios.get("https://127.0.0.1:3333/api/v1/movies").then((resp) => {
           console.log(resp);
-          let docs = resp.data.docs;
+          let doc = resp.data.doc;
           this.allMovie = [];
-          docs.forEach((el) => {
+          doc.forEach((el) => {
             function checkAvailability(arr, val) {
               return arr.some((arrVal) => val === arrVal);
             }
@@ -132,9 +132,9 @@ export default {
         this.sortBy = true;
         await axios.get("https://127.0.0.1:3333/api/v1/movies").then((resp) => {
           console.log(resp);
-          let docs = resp.data.docs;
+          let doc = resp.data.doc;
           this.allMovie = [];
-          docs.forEach((el) => {
+          doc.forEach((el) => {
             function checkAvailability(arr, val) {
               return arr.some((arrVal) => val === arrVal);
             }

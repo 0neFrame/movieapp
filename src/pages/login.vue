@@ -1,7 +1,5 @@
 <template>
   <div id="login">
-    <!-- <form> -->
-
     <div class="container text-values">
       <div class="alert alert-success" role="alert" v-if="alertSuccess">
         {{ serverNotification }}
@@ -12,7 +10,9 @@
       <form class="form media-body" name="form1" v-on:submit.prevent>
         <div class="container text-values media-body">
           <div class="form-row justify-content-center">
-            <div class="form-group user-select-none col-4">
+            <div
+              class="form-group user-select-none col-sm col-md-3 col-lg-3 col-xl-3 col-fluid-3"
+            >
               <label for="exampleInputEmail1">email address</label>
               <input
                 v-model="email"
@@ -22,7 +22,9 @@
                 aria-describedby="emailHelp"
               />
             </div>
-            <div class="form-group user-select-none col-3">
+            <div
+              class="form-group user-select-none col-sm col-md-3 col-lg-3 col-xl-3 col-fluid-3"
+            >
               <label for="exampleInputPassword1">password</label>
               <input
                 v-model="password"
@@ -32,7 +34,11 @@
               />
             </div>
             <div class="form-group align-self-end" v-on:submit.prevent>
-              <button @click="tfauth" type="submit" class="btn btn-outline-dark">
+              <button
+                @click="tfauth"
+                type="submit"
+                class="btn btn-outline-dark"
+              >
                 submit
               </button>
             </div>
@@ -42,7 +48,7 @@
             <input
               v-model="codeQRCode"
               type="text"
-              class="form-control text-center col-2"
+              class="form-control text-center col-sm col-md-2 col-lg-2 col-xl-2 col-fluid-2"
               placeholder="code"
             />
             <button
@@ -67,20 +73,17 @@
         </button>
       </div>
     </div>
-    <!-- </form> -->
     <div class="justify-content-center marg20 user-select-none media-body">
       <div class="form-group user-select-none">
         <label class="pd20r">you've facebook? press on</label>
-        <!-- <button
-          @click.prevent="facebook"
-          type="submit"
-          class="marg20 btn btn-outline-primary"
-        >
-          facebook
-        </button> -->
-        <a href="https://127.0.0.1:3333/api/v1/auth/facebook" target="_blank"
+        <a
+          class="btn btn-outline-primary"
+          href="https://127.0.0.1:3333/api/v1/auth/facebook"
           >facebook</a
         >
+        <!-- <button class="btn btn-outline-primary" @click.prevent="fb">
+          facebook
+        </button> -->
       </div>
       <div class="justify-content-center marg20 user-select-none media-body">
         <div class="form-group user-select-none">
@@ -141,6 +144,16 @@ export default {
           this.alertSuccess = false;
         });
     },
+    // async fb() {
+    //   await axios
+    //     .get("https://127.0.0.1:3333/api/v1/auth/facebook")
+    //     .then((resp) => {
+    //       console.log("resp", resp);
+    //     })
+    //     .catch((error) => {
+    //       console.log("error", error);
+    //     });
+    // },
     async tfauth() {
       await axios
         .post("https://127.0.0.1:3333/api/v1/users/tfauth", {
@@ -148,16 +161,17 @@ export default {
           password: this.password,
         })
         .then((resp) => {
-          console.log("resp", resp);
-          console.log(resp.data);
-          console.log(resp.data.base32secret);
-          console.log(resp.data.data_url);
+          // console.log("resp", resp);
           this.b32secret = resp.data.base32secret;
           this.urlQRCode = resp.data.data_url;
           this.formQRCode = true;
+
+          this.serverNotification = "use it any Authenticator for QR code";
+          this.alertDanger = false;
+          this.alertSuccess = true;
         })
         .catch((error) => {
-          console.log("error", error);
+          // console.log("error", error);
           this.serverNotification = error.response.data.message;
           this.alertDanger = true;
           this.alertSuccess = false;
@@ -172,7 +186,7 @@ export default {
           codeQrcode: this.codeQRCode,
         })
         .then((resp) => {
-          console.log("resp", resp);
+          // console.log("resp", resp);
           let data = resp.data;
 
           this.serverNotification = data.status;
@@ -187,7 +201,7 @@ export default {
           }, 1);
         })
         .catch((error) => {
-          console.log("error", error);
+          // console.log("error", error);
           this.serverNotification = error.response.data.message;
           this.alertDanger = true;
           this.alertSuccess = false;

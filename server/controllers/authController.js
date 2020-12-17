@@ -5,6 +5,8 @@ const crypto = require("crypto");
 const speakeasy = require("speakeasy");
 const QRCode = require("qrcode");
 
+const passport = require("passport");
+
 const catchAsync = require("../utils/catchAsync");
 const sendEmail = require("../utils/email");
 const AppError = require("../utils/AppError");
@@ -20,9 +22,7 @@ const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
 
   const cookieOptions = {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 360000
-    ),
+    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 360000),
     httpOnly: true,
     secure: true,
   };
@@ -65,7 +65,7 @@ exports.tfauth = catchAsync(async (req, res, next) => {
     return next(new AppError(`INCORRECT EMAIL/PASSWORD`, 401));
   }
 
-  const secret = speakeasy.generateSecret({ length: 36 });
+  const secret = speakeasy.generateSecret({ length: 16 });
   user.two_factor_temp_secret = secret.hex;
   const base32secret = user.two_factor_temp_secret;
   QRCode.toDataURL(secret.otpauth_url, (err, data_url) => {
@@ -102,12 +102,15 @@ exports.login = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
+exports.facebookLogin = catchAsync(async (req, res, next) => {
+  const { user } = /*req.body ||*/ req;
+  console.log("userFb", user);
+  createSendToken(user, 200, res);
+});
+
 exports.protect = catchAsync(async (req, res, next) => {
   let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
+  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
     token = req.headers.authorization.split(" ")[1];
     // } else if (req.cookie.jwt) {
     //   token = req.cookie.jwt;
@@ -137,10 +140,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 exports.isLoggedIn = catchAsync(async (req, res, next) => {
   // console.log(req.headers.authorization);
   if (req.headers.authorization) {
-    const decoded = await promisify(jwt.verify)(
-      req.headers.authorization,
-      process.env.JWT_SECRET
-    );
+    const decoded = await promisify(jwt.verify)(req.headers.authorization, process.env.JWT_SECRET);
 
     const currentUser = await User.findById(decoded.id);
     if (!currentUser) {
@@ -175,8 +175,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   const resetToken = user.createPasswordResetToken();
   await user.save({ validateBeforeSave: false });
 
-  // const resetURL = `${req.protocol}://${req.get("host")}
-  // /api/v1/users/resetPassword/${resetToken}`;
+  // const resetURL = `${req.protocol}://${req.get("host")}/api/v1/users/resetPassword/${resetToken}`;
   const resetURL = `${req.protocol}://localhost:3334/resetPassword/${resetToken}`;
 
   const message = `You forgot password? Press URL => ${resetURL}\nIf you didn't forgot your password, please ignore this email!`;

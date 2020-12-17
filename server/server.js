@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const appS = require("./index");
 
+const tls_server = require("../server/tls/tls_server");
 // const tls = require("tls");
 const https = require("https");
 const fs = require("fs");
@@ -12,8 +13,6 @@ const options = {
   requestCert: false,
   rejectUnauthorized: false,
 };
-
-const tls_server = require("../server/tls/tls_server");
 
 process.on("uncaughtException", (err) => {
   console.log("Uncaught Exception!!! Bye-bye!");
@@ -29,8 +28,8 @@ const DB = process.env.MONGO_DATABASE.replace(
 );
 mongoose
   .connect(DB, {
-    useNewUrlParser: true,
     useCreateIndex: true,
+    useNewUrlParser: true,
     useFindAndModify: false,
     useUnifiedTopology: true,
   })
@@ -49,7 +48,7 @@ https.createServer(options, appS).listen(port, host, function() {
 });
 
 process.on("unhandledRejection", (err) => {
-  console.log(err.name, err.msg);
+  console.log(err);
   console.log("UNHANDLED REJECTION!!! Bye-bye!");
   server.close(() => {
     process.exit(1);

@@ -13,17 +13,13 @@ const movieSchema = new mongoose.Schema(
 
     title: String,
 
-    arrUserID: {
-      type: Array,
-    },
+    year: String,
+
+    arrUserID: Array,
+
     // review: {
     //   type: mongoose.Schema.ObjectId,
     //   ref: "Review",
-    // },
-
-    // userUnqID: {
-    //   type: mongoose.Schema.ObjectId,
-    //   ref: "User",
     // },
   },
   {

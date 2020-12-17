@@ -119,7 +119,7 @@
             <input
               v-model="codeQRCode"
               type="text"
-              class="form-control text-center col-4"
+              class="form-control text-center col-sm col-md-2 col-lg-2 col-xl-2 col-fluid-2"
               placeholder="code"
             />
             <button

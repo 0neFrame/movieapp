@@ -62,8 +62,31 @@ export default {
       }, 1);
     },
   },
-  mounted() {
+  async mounted() {
     axios.defaults.headers.common["Authorization"] = this.jwt;
+
+    await axios
+      .get(`https://127.0.0.1:3333/api/v1/users/me`, {
+        id: localStorage.userID,
+      })
+      .then((resp) => {
+        console.log(resp);
+        // console.log(resp.data.data.doc);
+        // this.getMe = resp.data.data.doc;
+      })
+      .catch((error) => {
+        // console.log(error);
+        // console.log(error.response.data.message);
+
+        if (error.response.data.message === "jwt expired") {
+          this.jwt = null;
+          localStorage.removeItem("jwt");
+          localStorage.removeItem("userID");
+          window.setTimeout(() => {
+            location.assign("/");
+          }, 1);
+        }
+      });
   },
 };
 </script>

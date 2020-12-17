@@ -37,12 +37,12 @@ exports.updateOne = (Model) =>
 
 exports.createOne = (Model) =>
   catchAsync(async (req, res, next) => {
-    const docs = await Model.create(req.body);
+    const doc = await Model.create(req.body);
 
     res.status(201).json({
       status: "success",
       data: {
-        docs,
+        doc,
       },
     });
   });
@@ -76,14 +76,14 @@ exports.getAll = (Model) =>
 
     await Model.find(filter)
       .sort("title")
-      .exec((err, docs) => {
-        // console.log("err", err); 
-        // console.log("docs", docs);
+      .exec((err, doc) => {
+        // console.log("err", err);
+        // console.log("doc", doc);
 
         res.status(200).json({
           status: "success",
-          results: docs.length,
-          docs,
+          results: doc.length,
+          doc,
         });
       });
 
@@ -91,7 +91,7 @@ exports.getAll = (Model) =>
 
     // res.status(200).json({
     //   status: "success",
-    //   results: docs.length,
-    //   docs,
+    //   results: doc.length,
+    //   doc,
     // });
   });
