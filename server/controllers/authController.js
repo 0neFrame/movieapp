@@ -11,10 +11,11 @@ const catchAsync = require("../utils/catchAsync");
 const sendEmail = require("../utils/email");
 const AppError = require("../utils/AppError");
 const User = require("../models/userModel");
+const socUser = require("../models/socUserModel");
 
-const signToken = (id) => {
+const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
+    expiresIn: process.env.JWT_EXPIRES_IN
   });
 };
 
@@ -22,9 +23,11 @@ const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
 
   const cookieOptions = {
-    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 360000),
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 360000
+    ),
     httpOnly: true,
-    secure: true,
+    secure: true
   };
 
   if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
@@ -36,8 +39,8 @@ const createSendToken = (user, statusCode, res) => {
     status: "success",
     token,
     data: {
-      user,
-    },
+      user
+    }
   });
 };
 
@@ -47,7 +50,7 @@ exports.singup = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
-    role: req.body.role,
+    role: req.body.role
   });
 
   createSendToken(newUser, 201, res);
@@ -73,7 +76,7 @@ exports.tfauth = catchAsync(async (req, res, next) => {
     res.status(200).json({
       status: "success",
       data_url,
-      base32secret,
+      base32secret
     });
   });
 });
@@ -93,7 +96,7 @@ exports.login = catchAsync(async (req, res, next) => {
   const verified = speakeasy.totp.verify({
     secret: req.body.base32secret,
     encoding: "hex",
-    token: req.body.codeQrcode,
+    token: req.body.codeQrcode
   });
   if (!verified) {
     return next(new AppError(`INCORRECT DATA`, 401));
@@ -103,17 +106,20 @@ exports.login = catchAsync(async (req, res, next) => {
 });
 
 exports.facebookLogin = catchAsync(async (req, res, next) => {
-  const { user } = /*req.body ||*/ req;
-  console.log("userFb", user);
+  const { userID } = req.body;
+  const user = await socUser.findById(userID);
+  // console.log("userFb", user);
+
   createSendToken(user, 200, res);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
   let token;
-  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
     token = req.headers.authorization.split(" ")[1];
-    // } else if (req.cookie.jwt) {
-    //   token = req.cookie.jwt;
   } else if (req.headers.authorization) {
     token = req.headers.authorization;
   }
@@ -124,7 +130,9 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
-  const currentUser = await User.findById(decoded.id);
+  const currentUser =
+    (await User.findById(decoded.id)) || (await socUser.findById(decoded.id));
+
   if (!currentUser) {
     return next(new AppError("TOKEN DOES NO LONGER EXIST", 401));
   }
@@ -133,6 +141,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     return next(new AppError("USER CHANGED PASSWORD", 401));
   }
 
+  // console.log("protect user", currentUser);
   req.user = currentUser;
   next();
 });
@@ -140,9 +149,15 @@ exports.protect = catchAsync(async (req, res, next) => {
 exports.isLoggedIn = catchAsync(async (req, res, next) => {
   // console.log(req.headers.authorization);
   if (req.headers.authorization) {
-    const decoded = await promisify(jwt.verify)(req.headers.authorization, process.env.JWT_SECRET);
+    const decoded = await promisify(jwt.verify)(
+      req.headers.authorization,
+      process.env.JWT_SECRET
+    );
+    // console.log("decoded user", decoded);
 
-    const currentUser = await User.findById(decoded.id);
+    const currentUser =
+      (await User.findById(decoded.id)) || (await socUser.findById(decoded.id));
+
     if (!currentUser) {
       return next();
     }
@@ -151,6 +166,7 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
       return next();
     }
 
+    console.log("isLoggedIn user", currentUser);
     req.user = currentUser;
     return next();
   }
@@ -159,6 +175,7 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
 
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
+    // console.log("restrictTo user", req.user);
     if (!roles.includes(req.user.role)) {
       return next(new AppError("YOU HAVEN'T PERMISSION", 403));
     }
@@ -184,12 +201,12 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     await sendEmail({
       email: user.email,
       subject: "Your password reset token (valid for 10 min)",
-      message,
+      message
     });
 
     res.status(200).json({
       status: "success",
-      message: "TOKEN SENT TO EMAIL",
+      message: "TOKEN SENT TO EMAIL"
     });
   } catch (error) {
     user.passwordResetToken = undefined;
@@ -208,7 +225,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
   const user = await User.findOne({
     passwordResetToken: hashedToken,
-    passwordResetExpires: { $gt: Date.now() },
+    passwordResetExpires: { $gt: Date.now() }
   });
 
   if (!user) {

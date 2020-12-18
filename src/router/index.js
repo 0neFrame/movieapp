@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import profile from "../pages/profile.vue";
-import socProfile from "../pages/socProfile.vue";
+import welcome from "../pages/welcome.vue";
 import review from "../pages/review.vue";
 import search from "../pages/search.vue";
 import movies from "../pages/movies.vue";
@@ -38,7 +38,7 @@ const routes = [
   },
   // { path: "/user/:userId/profile", name: "profile", component: profile },
   { path: "/profile", name: "profile", component: profile },
-  { path: "/socprofile", name: "socprofile", component: socProfile },
+  { path: "/welcome/:userId", name: "welcome", component: welcome },
   {
     // path: "/user/:userId/movies",
     path: "/:userId/movies",

@@ -8,14 +8,14 @@
         </h1>
         <div class="row row-cols-1 justify-content-center">
           <div
-            class="col-sm col-md-4 col-lg-4 col-xl-4 col-fluid-3"
+            class="col-sm col-md-5 col-lg-4 col-xl-4 col-fluid-3"
             v-if="seen"
           >
             <b-form-rating v-model="rating" stars="10"></b-form-rating>
             <p v-if="rating" class="mt-2">My rating: {{ rating }}</p>
             <p v-else class="mt-2">Haven't rating</p>
           </div>
-          <div class="col-sm col-md-4 col-lg-4 col-xl-4 col-fluid-3" v-else>
+          <div class="col-sm col-md-5 col-lg-4 col-xl-4 col-fluid-3" v-else>
             <b-form-rating
               v-model="reviewData.rating"
               stars="10"

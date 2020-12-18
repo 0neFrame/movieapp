@@ -3,26 +3,26 @@ const mongoose = require("mongoose");
 
 const socUserSchema = new mongoose.Schema(
   {
-    id: {
-      type: String,
-      unique: true,
-    },
-
-    token: String,
-
-    provider: String,
-
-    name: String,
-
     createdAt: {
       type: Date,
       default: Date.now(),
+    },
+
+    idFb: {
+      type: String,
+      unique: true,
     },
 
     role: {
       type: String,
       default: "user",
     },
+
+    provider: String,
+
+    tokenFb: String,
+
+    name: String,
 
     // active: {
     //   type: Boolean,
@@ -38,17 +38,30 @@ const socUserSchema = new mongoose.Schema(
     //   validate: [validator.isEmail, "Email must have!"],
     // },
 
-    // passwordChangedAt: Date,
+    passwordChangedAt: Date,
 
-    // passwordResetToken: String,
+    passwordResetToken: String,
 
-    // passwordResetExpires: Date,
+    passwordResetExpires: Date,
   },
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
 );
+
+socUserSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+
+    console.log(changedTimestamp, JWTTimestamp);
+    return JWTTimestamp < changedTimestamp;
+  }
+  return false;
+};
 
 // socUserSchema.pre(/^find/, (next) => {
 //   this.find({ active: { $ne: false } });

@@ -22,9 +22,11 @@ const getRandomMovie = require("./axios/getRandomMovie");
 require("dotenv").config();
 const passport = require("passport");
 const Strategy = require("passport-facebook").Strategy;
-const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
 const socUser = require("./models/socUserModel");
+// const bodyParser = require("body-parser");
+// const session = require("express-session");
+// const MongoStore = require("connect-mongo")(session);
 // FACEBOOK STAGE 1 - END
 
 // MAIN STAGE
@@ -53,8 +55,13 @@ appS.use((req, res, next) => {
 });
 
 // FACEBOOK STAGE 2 - START
-// appS.use(bodyParser.urlencoded({ extended: false }));
-// appS.use(bodyParser.json());
+// // appS.use(bodyParser.urlencoded({ extended: false }));
+// // appS.use(bodyParser.json());
+// appS.use(
+//   session({
+//     store: new MongoStore({ url: process.env.MONGO_DATABASE_LOCAL }),
+//   })
+// );
 appS.use(
   cookieSession({
     name: "bla-bla-land",
@@ -84,14 +91,14 @@ passport.use(
       // console.log("profile", profile);
 
       process.nextTick(() => {
-        socUser.findOne({ id: profile.id }, (err, user) => {
+        socUser.findOne({ idFb: profile.id }, (err, user) => {
           if (err) return done(err);
           if (user) {
             return done(null, user);
           } else {
             let newUser = new socUser();
-            newUser.id = profile.id;
-            newUser.token = accessToken;
+            newUser.idFb = profile.id;
+            newUser.tokenFb = accessToken;
             newUser.name = profile.displayName;
             newUser.provider = profile.provider;
             newUser.save((err) => {

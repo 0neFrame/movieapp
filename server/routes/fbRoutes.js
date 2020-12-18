@@ -23,20 +23,15 @@ routerS.get(
 );
 routerS.get(
   "/profile",
-  /*isLoggedIn,*/
+  isLoggedIn,
   // authController.facebookLogin,
   (req, res) => {
-    req.body.user = req.user;
+    // req.body.user = req.user;
     // console.log("req.body.user", req.body.user);
-    res.redirect("http://localhost:3334/socprofile");
+    res.redirect(`http://localhost:3334/welcome/${req.user._id}`);
   },
 );
-routerS.get("/profile-fb", isLoggedIn, (req, res) => {
-  res.status(200).json({
-    status: "success",
-    data: req.user,
-  });
-});
+routerS.post("/profile", authController.facebookLogin);
 
 routerS.use(authController.protect);
 

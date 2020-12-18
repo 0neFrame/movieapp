@@ -2,7 +2,7 @@
   <div class="about">
     <div class="container">
       <div class="spec text-title">
-        <h1>WELCOME - WELCOME - WELCOME</h1>
+        <h1>WELCOME  {{ userData.name }}</h1>
         <h3>and enjoy it!</h3>
       </div>
       <div>
@@ -18,11 +18,13 @@
 import axios from "axios";
 
 export default {
-  name: "socProfile",
+  name: "welcome",
   data() {
     return {
       jwt: [],
       userID: [],
+      provider: [],
+      userData: [],
       alertSuccess: false,
       alertDanger: false,
       serverNotification: [],
@@ -31,19 +33,23 @@ export default {
 
   async mounted() {
     await axios
-      .get("https://127.0.0.1:3333/api/v1/auth/profile")
+      .post("https://127.0.0.1:3333/api/v1/auth/profile", {
+        userID: this.$route.params.userId,
+      })
       .then((resp) => {
         console.log("resp", resp);
         // this.serverNotification = resp.data.status;
         // this.alertSuccess = true;
         // this.alertDanger = false;
 
-        // this.jwt = resp.data.token;
-        // this.userID = resp.data.data.user._id;
-        // console.log(this.jwt);
-        // window.setTimeout(() => {
-        //   location.assign(`/search`);
-        // }, 3000);
+        this.jwt = resp.data.token;
+        this.userID = resp.data.data.user._id;
+        this.userData = resp.data.data.user;
+        this.provider = resp.data.data.user.provider;
+        // console.log("userData", this.userData);
+        window.setTimeout(() => {
+          location.assign(`/search`);
+        }, 2000);
       })
       .catch((error) => {
         console.log("error", error);
@@ -58,6 +64,9 @@ export default {
     },
     userID(newUserID) {
       localStorage.userID = newUserID;
+    },
+    provider(newProvider) {
+      localStorage.provider = newProvider;
     },
   },
 };

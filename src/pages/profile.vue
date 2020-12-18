@@ -168,7 +168,7 @@ export default {
         id: localStorage.userID,
       })
       .then((resp) => {
-        // console.log(resp);
+        console.log(resp);
         // console.log(resp.data.data.doc);
         this.getMe = resp.data.data.doc;
       })

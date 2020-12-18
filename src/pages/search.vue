@@ -7,7 +7,7 @@
       {{ serverNotification }}
     </div>
 
-    <form class="form media-body" name="form1" v-on:submit.prevent>
+    <form class="form" name="form1" v-on:submit.prevent>
       <div class="form-group">
         <label
           for="input1"
@@ -17,7 +17,7 @@
       </div>
       <div class="text-values">
         <div class="form-row justify-content-center">
-          <div class="col-sm col-md-3 col-lg-3 col-xl-3 col-fluid-3">
+          <div class="col-sm col-md-4 col-lg-3 col-xl-3 col-fluid-2">
             <input
               v-model="titles"
               type="text"
@@ -26,7 +26,7 @@
               placeholder="title"
             />
           </div>
-          <div class="col-sm col-md-2 col-lg-2 col-xl-2 col-fluid-1">
+          <div class="col-sm-2 col-md-2 col-lg-2 col-xl-1 col-fluid-1">
             <input
               type="number"
               v-model.number="years"
@@ -80,11 +80,18 @@
     </transition>
     <transition name="smoothAnim">
       <div v-if="movieValue.Title" class="media-body media text-values">
-        <div class="media-body">
+        <div class="col">
           <img class="imgPadd" :src="movieValue.Poster" alt />
           <h1 class="mt-0 media-body">{{ movieValue.Title }}</h1>
-          <dl class="row row-cols-2 media-body container">
-            <dt class="col-5 text-right" v-if="movieValue.Title">
+          <dl
+            class="row row-cols-2 media-body container"
+            style="padding-right: 0px; padding-left: 0px"
+          >
+            <dt
+              class="col-5 col-lg-5 col-xl-5 col-fluid-5 text-right"
+              style="padding-left: 0px"
+              v-if="movieValue.Title"
+            >
               <p>TYPE</p>
               <p>DIRECTOR</p>
               <p>GENRE</p>
@@ -96,7 +103,11 @@
               <p>IMDB_RATE</p>
               <p>METASCORE</p>
             </dt>
-            <dd class="col-7 text-left" v-bind="movieValue">
+            <dd
+              class="col-7 text-left"
+              style="padding-right: 0px; padding-left: 0px"
+              v-bind="movieValue"
+            >
               <p>{{ movieValue.Type }}</p>
               <p>{{ movieValue.Director }}</p>
               <p>{{ movieValue.Genre }}</p>
@@ -179,10 +190,10 @@ export default {
 
           this.movieValue = data;
           this.clickBtn = false;
-          console.log(
-            "this.movieValue.data.doc._id:",
-            this.movieValue.data.doc._id
-          );
+          // console.log(
+          //   "this.movieValue.data.doc._id:",
+          //   this.movieValue.data.doc._id
+          // );
         })
         .catch((error) => {
           console.log(error);
@@ -274,12 +285,12 @@ export default {
 
 .text-title {
   font-family: "Kufam", cursive;
-  font-size: 150%;
+  font-size: 10%;
   width: 400;
 }
 .text-values {
   font-family: "Kufam", cursive;
-  font-size: 100%;
+  font-size: 10%;
 }
 
 .spec {
