@@ -78,7 +78,7 @@ export default {
   methods: {
     async singUp() {
       await axios
-        .post("https://127.0.0.1:3333/api/v1/users/singup", {
+        .post("api/v1/users/singup", {
           name: this.name,
           email: this.email,
           password: this.password,

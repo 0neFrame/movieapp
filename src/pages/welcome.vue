@@ -33,7 +33,7 @@ export default {
 
   async mounted() {
     await axios
-      .post("https://127.0.0.1:3333/api/v1/auth/profile", {
+      .post("api/v1/auth/profile", {
         userID: this.$route.params.userId,
       })
       .then((resp) => {

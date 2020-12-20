@@ -16,7 +16,7 @@
               aria-describedby="emailHelp"
             />
           </div> -->
-          <div class="form-group ">
+          <div class="form-group">
             <label class="user-select-none">new password</label>
             <input
               v-model.trim="password"
@@ -73,13 +73,10 @@ export default {
   methods: {
     async resetPass() {
       await axios
-        .patch(
-          `http://127.0.0.1:3333/api/v1/users/resetPassword/${this.$route.params.token}`,
-          {
-            password: this.password,
-            passwordConfirm: this.passwordConfirm,
-          }
-        )
+        .patch(`api/v1/users/resetPassword/${this.$route.params.token}`, {
+          password: this.password,
+          passwordConfirm: this.passwordConfirm,
+        })
         .then((resp) => {
           console.log(resp);
           console.log(resp.data);

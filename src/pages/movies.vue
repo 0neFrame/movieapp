@@ -66,7 +66,7 @@ export default {
   },
   async mounted() {
     await axios
-      .get("https://127.0.0.1:3333/api/v1/movies")
+      .get("api/v1/movies")
       .then((resp) => {
         console.log(resp);
         let doc = resp.data.doc;
@@ -90,10 +90,10 @@ export default {
   methods: {
     // async delMovie() {
     //   const idMovie = await document.activeElement.value;
-    //   await axios.delete(`https://127.0.0.1:3333/api/v1/movies/${idMovie}`);
+    //   await axios.delete(`api/v1/movies/${idMovie}`);
     //   console.log("DELETED");
     //   await axios
-    //     .get("https://127.0.0.1:3333/api/v1/movies")
+    //     .get("api/v1/movies")
     //     .then((resp) => {
     //       let doc = resp.data.doc;
     //       this.allMovie = [];
@@ -115,7 +115,7 @@ export default {
     async sort() {
       if (this.sortBy) {
         this.sortBy = false;
-        await axios.get("https://127.0.0.1:3333/api/v1/movies").then((resp) => {
+        await axios.get("api/v1/movies").then((resp) => {
           console.log(resp);
           let doc = resp.data.doc;
           this.allMovie = [];
@@ -130,7 +130,7 @@ export default {
         });
       } else {
         this.sortBy = true;
-        await axios.get("https://127.0.0.1:3333/api/v1/movies").then((resp) => {
+        await axios.get("api/v1/movies").then((resp) => {
           console.log(resp);
           let doc = resp.data.doc;
           this.allMovie = [];
@@ -148,7 +148,7 @@ export default {
     async addReview() {},
     // const idMovie = await document.activeElement.value;
     // await axios
-    //   .post(`https://127.0.0.1:3333/api/v1/reviews`, {
+    //   .post(`api/v1/reviews`, {
     //     user: localStorage.userID,
     //     // user: this.$route.params.userId,
     //     movie: idMovie,

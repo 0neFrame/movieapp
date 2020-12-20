@@ -108,7 +108,7 @@ export default {
 
     if (!localStorage.provider) {
       await axios
-        .get(`https://127.0.0.1:3333/api/v1/users/me`, {
+        .get(`api/v1/users/me`, {
           id: localStorage.userID,
         })
         .then((resp) => {
@@ -154,10 +154,6 @@ export default {
     rgb(216, 230, 30) 100%
   );
 }
-
-/* .login {
-  text-align: right;
-} */
 
 #nav {
   padding: 10px;

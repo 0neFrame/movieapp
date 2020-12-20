@@ -23,7 +23,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Kufam:ital,wght@0,400;0,700;1,900&display=swap");
 
 .spec {
-  padding: 25vh 0 50vh 0;
+  padding: 5vh 0 5vh 0;
 }
 
 .text-title {

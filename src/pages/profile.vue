@@ -164,7 +164,7 @@ export default {
     if (localStorage.jwt) this.jwt = localStorage.jwt;
 
     await axios
-      .get(`https://127.0.0.1:3333/api/v1/users/me`, {
+      .get(`api/v1/users/me`, {
         id: localStorage.userID,
       })
       .then((resp) => {
@@ -179,7 +179,7 @@ export default {
   methods: {
     async updData() {
       await axios
-        .patch(`https://127.0.0.1:3333/api/v1/users/updateMe`, {
+        .patch(`api/v1/users/updateMe`, {
           id: localStorage.userID,
           name: this.name,
           email: this.email,
@@ -207,7 +207,7 @@ export default {
     },
     async updPass() {
       await axios
-        .patch(`https://127.0.0.1:3333/api/v1/users/updateMyPassword`, {
+        .patch(`api/v1/users/updateMyPassword`, {
           id: localStorage.userID,
           password: this.password,
           passwordConfirm: this.passwordConfirm,
@@ -234,7 +234,7 @@ export default {
 
     async tfauth() {
       await axios
-        .post("https://127.0.0.1:3333/api/v1/users/tfauth", {
+        .post("api/v1/users/tfauth", {
           email: this.emailDel,
           password: this.passwordDel,
         })
@@ -257,7 +257,7 @@ export default {
 
     async delProfile() {
       await axios
-        .patch(`https://127.0.0.1:3333/api/v1/users/deleteMe`, {
+        .patch(`api/v1/users/deleteMe`, {
           id: localStorage.userID,
           base32secret: this.b32secret,
           codeQrcode: this.codeQRCode,

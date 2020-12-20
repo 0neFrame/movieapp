@@ -28,7 +28,7 @@ routerS.get(
   (req, res) => {
     // req.body.user = req.user;
     // console.log("req.body.user", req.body.user);
-    res.redirect(`http://localhost:3334/welcome/${req.user._id}`);
+    res.redirect(`welcome/${req.user._id}`);
   },
 );
 routerS.post("/profile", authController.facebookLogin);

@@ -243,7 +243,7 @@ export default {
 
     async addMovie() {
       await axios
-        .post("https://127.0.0.1:3333/api/v1/movies", {
+        .post("api/v1/movies", {
           arrUserID: localStorage.userID,
           poster: this.movieValue.Poster,
           title: this.movieValue.Title,
@@ -279,7 +279,7 @@ export default {
         });
 
       await axios
-        .post(`https://127.0.0.1:3333/api/v1/reviews`, {
+        .post(`api/v1/reviews`, {
           user: localStorage.userID,
           movie: this.movieValue.data.doc._id,
         })
@@ -295,7 +295,7 @@ export default {
 
     async searchMovie() {
       await axios
-        .post("https://127.0.0.1:3333/search", {
+        .post("search", {
           t: this.titles,
           y: this.years,
         })
@@ -332,7 +332,7 @@ export default {
       // console.log(`response: ${this.movieValue.Response}`);
       do {
         await axios
-          .post("https://127.0.0.1:3333/search/r", {
+          .post("search/r", {
             i: `tt${Math.floor(Math.random() * 10000000 + 1)}`,
           })
           .then((resp) => {

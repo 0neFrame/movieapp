@@ -78,7 +78,7 @@
         <label class="pd20r">you've facebook? press on</label>
         <a
           class="btn btn-outline-primary"
-          href="https://127.0.0.1:3333/api/v1/auth/facebook"
+          href="api/v1/auth/facebook"
           >facebook</a
         >
         <!-- <button class="btn btn-outline-primary" @click.prevent="fb">
@@ -127,7 +127,7 @@ export default {
   methods: {
     async forgotPass() {
       await axios
-        .post("https://127.0.0.1:3333/api/v1/users/forgotPassword", {
+        .post("api/v1/users/forgotPassword", {
           email: this.email,
         })
         .then((resp) => {
@@ -146,7 +146,7 @@ export default {
     },
     // async fb() {
     //   await axios
-    //     .get("https://127.0.0.1:3333/api/v1/auth/facebook")
+    //     .get("api/v1/auth/facebook")
     //     .then((resp) => {
     //       console.log("resp", resp);
     //     })
@@ -156,7 +156,7 @@ export default {
     // },
     async tfauth() {
       await axios
-        .post("https://127.0.0.1:3333/api/v1/users/tfauth", {
+        .post("api/v1/users/tfauth", {
           email: this.email,
           password: this.password,
         })
@@ -179,7 +179,7 @@ export default {
     },
     async logIn() {
       await axios
-        .post("https://127.0.0.1:3333/api/v1/users/login", {
+        .post("api/v1/users/login", {
           email: this.email,
           password: this.password,
           base32secret: this.b32secret,

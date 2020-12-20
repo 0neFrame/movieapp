@@ -102,7 +102,7 @@ export default {
   },
   async mounted() {
     await axios
-      .get(`https://127.0.0.1:3333/api/v1/movies/${this.$route.params.movieId}`)
+      .get(`api/v1/movies/${this.$route.params.movieId}`)
       .then((resp) => {
         let doc = resp.data.data.doc;
         console.log(doc);
@@ -114,7 +114,7 @@ export default {
 
     await axios
       .get(
-        `https://127.0.0.1:3333/api/v1/users/${this.$route.params.userId}/movies/${this.$route.params.movieId}/reviews`
+        `api/v1/users/${this.$route.params.userId}/movies/${this.$route.params.movieId}/reviews`
       )
       .then((resp) => {
         let doc = resp.data.doc;
@@ -130,7 +130,7 @@ export default {
     async saveReview() {
       this.seen = false;
       await axios
-        .patch(`https://127.0.0.1:3333/api/v1/reviews/${this.reviewData.id}`, {
+        .patch(`api/v1/reviews/${this.reviewData.id}`, {
           review: this.review,
           rating: this.rating,
         })
@@ -145,7 +145,7 @@ export default {
 
       await axios
         .get(
-          `https://127.0.0.1:3333/api/v1/users/${this.$route.params.userId}/movies/${this.$route.params.movieId}/reviews`
+          `api/v1/users/${this.$route.params.userId}/movies/${this.$route.params.movieId}/reviews`
         )
         .then((resp) => {
           let doc = resp.data.doc;
