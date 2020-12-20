@@ -38,7 +38,7 @@ mongoose
     console.log("DB connetion successful!");
   });
 
-const host = "127.0.0.1";
+const host = process.env.HOST || "127.0.0.1";
 const port = process.env.PORT || 3333;
 const server = appS.listen(port, () => {
   console.log(`App running on...port ${port}...Zzzz...`);
@@ -46,6 +46,7 @@ const server = appS.listen(port, () => {
 
 https.createServer(options, appS).listen(port, host, function() {
   console.log(`HTTPS-Server listens ${host}:${port}`);
+  console.log(`HTTPS-Server listens ${tls_server}`);
 });
 
 process.on("unhandledRejection", (err) => {
