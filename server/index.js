@@ -57,6 +57,9 @@ appS.use((req, res, next) => {
 });
 
 appS.use(express.static(__dirname + "../dist"));
+appS.get(/.*/, (req, res) => {
+  res.sendFile(__dirname + "../dist/index.html");
+});
 // appS.use("/", serveStatic(path.join(__dirname, "/dist")));
 
 // FACEBOOK STAGE 2 - START
