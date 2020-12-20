@@ -80,15 +80,15 @@
     </transition>
     <transition name="smoothAnim">
       <div v-if="movieValue.Title" class="media-body media text-values">
-        <div class="col">
+        <div class="col" style="padding-left: 0px">
           <img class="imgPadd" :src="movieValue.Poster" alt />
           <h1 class="mt-0 media-body">{{ movieValue.Title }}</h1>
-          <dl
+          <!-- <dl
             class="row row-cols-2 media-body container"
             style="padding-right: 0px; padding-left: 0px"
           >
             <dt
-              class="col-5 col-lg-5 col-xl-5 col-fluid-5 text-right"
+              class="col-5 col-sm-6 col-lg-6 col-xl-6 col-fluid-6 text-right"
               style="padding-left: 0px"
               v-if="movieValue.Title"
             >
@@ -104,7 +104,7 @@
               <p>METASCORE</p>
             </dt>
             <dd
-              class="col-7 text-left"
+              class="text-left"
               style="padding-right: 0px; padding-left: 0px"
               v-bind="movieValue"
             >
@@ -119,7 +119,77 @@
               <p>{{ movieValue.imdbRating }}</p>
               <p>{{ movieValue.Metascore }}</p>
             </dd>
-          </dl>
+          </dl> -->
+          <table class="table table-borderless" style="line-height:1.3;">
+            <tbody>
+              <tr>
+                <th class="text-right" scope="row">YEAR</th>
+                <td class="text-left">
+                  {{ movieValue.Year }}
+                </td>
+              </tr>
+              <tr>
+                <th class="text-right" scope="row">TYPE</th>
+                <td class="text-left">
+                  {{ movieValue.Type }}
+                </td>
+              </tr>
+              <tr>
+                <th class="text-right" scope="row">GENRE</th>
+                <td class="text-left">
+                  {{ movieValue.Genre }}
+                </td>
+              </tr>
+              <tr>
+                <th class="text-right" scope="row">ACTORS</th>
+                <td class="text-left">
+                  {{ movieValue.Actors }}
+                </td>
+              </tr>
+              <tr>
+                <th class="text-right" scope="row">DIRECTOR</th>
+                <td class="text-left">
+                  {{ movieValue.Director }}
+                </td>
+              </tr>
+              <tr>
+                <th class="text-right" scope="row">RUNTIME</th>
+                <td class="text-left">
+                  {{ movieValue.Runtime }}
+                </td>
+              </tr>
+              <tr>
+                <th class="text-right" scope="row">RELEASED</th>
+                <td class="text-left">
+                  {{ movieValue.Released }}
+                </td>
+              </tr>
+              <tr>
+                <th class="text-right" scope="row">DVD</th>
+                <td class="text-left">
+                  {{ movieValue.DVD }}
+                </td>
+              </tr>
+              <tr>
+                <th class="text-right" scope="row">RATED</th>
+                <td class="text-left">
+                  {{ movieValue.Rated }}
+                </td>
+              </tr>
+              <tr>
+                <th class="text-right" scope="row">IMDB_RATE</th>
+                <td class="text-left">
+                  {{ movieValue.imdbRating }}
+                </td>
+              </tr>
+              <tr>
+                <th class="text-right" scope="row">METASCORE</th>
+                <td class="text-left">
+                  {{ movieValue.Metascore }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
           <div class="btntoadd">
             <button
               v-if="jwt"
