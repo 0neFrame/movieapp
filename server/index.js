@@ -5,7 +5,7 @@ const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const xss = require("xss-clean");
-const path = require("path");
+// const path = require("path");
 const cors = require("cors");
 const appS = express();
 
