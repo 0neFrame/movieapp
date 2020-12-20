@@ -56,7 +56,7 @@ appS.use((req, res, next) => {
   next();
 });
 
-// appS.use("/", serveStatic(path.join(__dirname, "/dist")));
+appS.use("/", serveStatic(path.join(__dirname, "/dist")));
 
 // FACEBOOK STAGE 2 - START
 // // appS.use(bodyParser.urlencoded({ extended: false }));
