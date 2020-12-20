@@ -2,10 +2,11 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const appS = require("./index");
 
-const tls_server = require("../server/tls/tls_server");
 // const tls = require("tls");
+const tls_server = require("../server/tls/tls_server");
 const https = require("https");
 const fs = require("fs");
+
 const options = {
   key: fs.readFileSync("./server/tls/r-key.pem"),
   ca: fs.readFileSync("./server/tls/r-csr.pem"),
@@ -16,7 +17,7 @@ const options = {
 
 process.on("uncaughtException", (err) => {
   console.log("Uncaught Exception!!! Bye-bye!");
-  console.log(/*err.name, err.msg,*/ err);
+  console.log(err);
   process.exit(1);
 });
 
@@ -44,7 +45,7 @@ const server = appS.listen(port, () => {
 });
 
 https.createServer(options, appS).listen(port, host, function() {
-  console.log(`HTTPS-Server listens https://${host}:${port}`);
+  console.log(`HTTPS-Server listens ${host}:${port}`);
 });
 
 process.on("unhandledRejection", (err) => {

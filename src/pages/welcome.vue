@@ -2,7 +2,7 @@
   <div class="about">
     <div class="container">
       <div class="spec text-title">
-        <h1>WELCOME  {{ userData.name }}</h1>
+        <h1>WELCOME {{ userData.name }}</h1>
         <h3>and enjoy it!</h3>
       </div>
       <div>

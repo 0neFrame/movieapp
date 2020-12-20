@@ -1,9 +1,11 @@
 /* eslint-disable no-undef */
 const rateLimit = require("express-rate-limit");
+const serveStatic = require("serve-static");
 const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const xss = require("xss-clean");
+const path = require("path");
 const cors = require("cors");
 const appS = express();
 
@@ -53,6 +55,8 @@ appS.use((req, res, next) => {
   console.log(req.requestTime);
   next();
 });
+
+appS.use("/", serveStatic(path.join(__dirname, "/dist")));
 
 // FACEBOOK STAGE 2 - START
 // // appS.use(bodyParser.urlencoded({ extended: false }));
