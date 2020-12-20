@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 const rateLimit = require("express-rate-limit");
-// const serveStatic = require("serve-static");
+const serveStatic = require("serve-static");
 const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
@@ -56,11 +56,11 @@ appS.use((req, res, next) => {
   next();
 });
 
-appS.use(express.static(__dirname + "../dist"));
-appS.get(/.*/, (req, res) => {
-  res.sendFile(__dirname + "../dist/index.html");
-});
-// appS.use("/", serveStatic(path.join(__dirname, "/dist")));
+// appS.use(express.static(__dirname + "../dist"));
+// appS.get(/.*/, (req, res) => {
+//   res.sendFile(__dirname + "../dist/index.html");
+// });
+appS.use("/", serveStatic(path.join(__dirname, "../dist")));
 
 // FACEBOOK STAGE 2 - START
 // // appS.use(bodyParser.urlencoded({ extended: false }));
