@@ -66,16 +66,14 @@ export default {
   },
   async mounted() {
     await axios
-      .get("api/v1/movies")
+      .get(`api/v1/movies`)
       .then((resp) => {
-        console.log(resp);
         let doc = resp.data.doc;
         this.allMovie = [];
         doc.forEach((el) => {
           function checkAvailability(arr, val) {
             return arr.some((arrVal) => val === arrVal);
           }
-          // if (checkAvailability(el.arrUserID, localStorage.userID)) {
           if (checkAvailability(el.arrUserID, this.$route.params.userId)) {
             this.allMovie.push(el);
           }
@@ -88,34 +86,10 @@ export default {
       });
   },
   methods: {
-    // async delMovie() {
-    //   const idMovie = await document.activeElement.value;
-    //   await axios.delete(`api/v1/movies/${idMovie}`);
-    //   console.log("DELETED");
-    //   await axios
-    //     .get("api/v1/movies")
-    //     .then((resp) => {
-    //       let doc = resp.data.doc;
-    //       this.allMovie = [];
-    //       doc.forEach((el) => {
-    //         function checkAvailability(arr, val) {
-    //           return arr.some((arrVal) => val === arrVal);
-    //         }
-    //         if (checkAvailability(el.userUnqID, localStorage.userID)) {
-    //           this.allMovie.push(el);
-    //         }
-    //       });
-    //       if (this.allMovie.length > 0) this.movieColl = true;
-    //       else this.movieColl = false;
-    //     })
-    //     .catch((error) => {
-    //       console.log(error);
-    //     });
-    // },
     async sort() {
       if (this.sortBy) {
         this.sortBy = false;
-        await axios.get("api/v1/movies").then((resp) => {
+        await axios.get(`api/v1/movies`).then((resp) => {
           console.log(resp);
           let doc = resp.data.doc;
           this.allMovie = [];
@@ -130,8 +104,7 @@ export default {
         });
       } else {
         this.sortBy = true;
-        await axios.get("api/v1/movies").then((resp) => {
-          console.log(resp);
+        await axios.get(`api/v1/movies`).then((resp) => {
           let doc = resp.data.doc;
           this.allMovie = [];
           doc.forEach((el) => {
@@ -146,20 +119,6 @@ export default {
       }
     },
     async addReview() {},
-    // const idMovie = await document.activeElement.value;
-    // await axios
-    //   .post(`api/v1/reviews`, {
-    //     user: localStorage.userID,
-    //     // user: this.$route.params.userId,
-    //     movie: idMovie,
-    //   })
-    //   .then((resp) => {
-    //     console.log(resp);
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
-    // },
   },
 };
 </script>

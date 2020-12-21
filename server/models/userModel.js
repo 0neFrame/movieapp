@@ -75,17 +75,6 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// userSchema.virtual("reviews", {
-//   ref: "Review",
-//   foreignField: "user",
-//   localField: "_id",
-// });
-// userSchema.virtual("movies", {
-//   ref: "Movie",
-//   foreignField: "user",
-//   localField: "_id",
-// });
-
 // userSchema.index({ user: 1 }, { unique: true });
 // userSchema.pre(/^find/, function(next) {
 //   this.populate({

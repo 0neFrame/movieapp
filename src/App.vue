@@ -99,7 +99,7 @@ export default {
       localStorage.removeItem("userID");
       localStorage.removeItem("provider");
       window.setTimeout(() => {
-        location.assign("/");
+        location.assign(`/`);
       }, 1);
     },
   },
@@ -112,24 +112,16 @@ export default {
           id: localStorage.userID,
         })
         .then((resp) => {
-          console.log(resp);
-          // console.log(resp.data.data.doc);
-          // this.getMe = resp.data.data.doc;
+          resp;
         })
         .catch((error) => {
-          // console.log(error);
-          // console.log(error.response.data.message);
-
-          if (
-            error.response.data.message ===
-            "jwt expired" /*||
-          error.response.data.message === "TOKEN DOES NO LONGER EXIST"*/
-          ) {
+          if (error.response.data.message === "jwt expired") {
             this.jwt = null;
             localStorage.removeItem("jwt");
             localStorage.removeItem("userID");
+            localStorage.removeItem("provider");
             window.setTimeout(() => {
-              location.assign("/");
+              location.assign(`/`);
             }, 1);
           }
         });

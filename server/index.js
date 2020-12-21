@@ -26,7 +26,7 @@ const passport = require("passport");
 const Strategy = require("passport-facebook").Strategy;
 const cookieSession = require("cookie-session");
 const socUser = require("./models/socUserModel");
-// const bodyParser = require("body-parser");
+const bodyParser = require("body-parser");
 // const session = require("express-session");
 // const MongoStore = require("connect-mongo")(session);
 // FACEBOOK STAGE 1 - END
@@ -63,8 +63,8 @@ appS.use((req, res, next) => {
 appS.use("/", serveStatic(path.join(__dirname, "../dist")));
 
 // FACEBOOK STAGE 2 - START
-// // appS.use(bodyParser.urlencoded({ extended: false }));
-// // appS.use(bodyParser.json());
+appS.use(bodyParser.json());
+appS.use(bodyParser.urlencoded({ extended: false }));
 // appS.use(
 //   session({
 //     store: new MongoStore({ url: process.env.MONGO_DATABASE_LOCAL }),
@@ -129,7 +129,7 @@ appS.use("/api/v1/auth", fbRoutes);
 appS.use("/api/v1/users", userRoutes);
 appS.use("/api/v1/movies", movieRoutes);
 appS.use("/api/v1/reviews", reviewRoutes);
-appS.use("/search", getMovie, getRandomMovie, delMovie);
+appS.use("/api/v1/search", getMovie, getRandomMovie, delMovie);
 
 appS.all("*", (req, res, next) => {
   next(new AppError(`Yo! Cant find - ${req.originalUrl}`, 404));

@@ -15,10 +15,7 @@ routerS.post("/", async (req, res) => {
     )
     .then((resp) => {
       console.log(`backend post: ${resp.data.Title}, ${resp.data.Year}`);
-      console.log(`Response: ${resp.data.Response}`);
-
-      const data = resp.data;
-      res.status(201).json(data);
+      res.status(201).json(resp.data);
     })
     .catch((error) => {
       console.log(error);

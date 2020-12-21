@@ -127,84 +127,67 @@ export default {
   methods: {
     async forgotPass() {
       await axios
-        .post("api/v1/users/forgotPassword", {
+        .post(`api/v1/users/forgotPassword`, {
           email: this.email,
         })
         .then((resp) => {
-          console.log("resp", resp);
-          let data = resp.data;
-          this.serverNotification = data.message;
-          this.alertSuccess = true;
           this.alertDanger = false;
+          this.serverNotification = resp.data.message;
+          this.alertSuccess = true;
         })
         .catch((error) => {
           console.log("error", error);
+          this.alertSuccess = false;
           this.serverNotification = error.response.data.message;
           this.alertDanger = true;
-          this.alertSuccess = false;
         });
     },
-    // async fb() {
-    //   await axios
-    //     .get("api/v1/auth/facebook")
-    //     .then((resp) => {
-    //       console.log("resp", resp);
-    //     })
-    //     .catch((error) => {
-    //       console.log("error", error);
-    //     });
-    // },
     async tfauth() {
       await axios
-        .post("api/v1/users/tfauth", {
+        .post(`api/v1/users/tfauth`, {
           email: this.email,
           password: this.password,
         })
         .then((resp) => {
-          // console.log("resp", resp);
           this.b32secret = resp.data.base32secret;
           this.urlQRCode = resp.data.data_url;
           this.formQRCode = true;
 
-          this.serverNotification = "use it any Authenticator for QR code";
           this.alertDanger = false;
+          this.serverNotification = "use it any Authenticator for QR code";
           this.alertSuccess = true;
         })
         .catch((error) => {
-          // console.log("error", error);
+          console.log("error", error);
+          this.alertSuccess = false;
           this.serverNotification = error.response.data.message;
           this.alertDanger = true;
-          this.alertSuccess = false;
         });
     },
     async logIn() {
       await axios
-        .post("api/v1/users/login", {
+        .post(`api/v1/users/login`, {
           email: this.email,
           password: this.password,
           base32secret: this.b32secret,
           codeQrcode: this.codeQRCode,
         })
         .then((resp) => {
-          // console.log("resp", resp);
-          let data = resp.data;
-
-          this.serverNotification = data.status;
-          this.alertSuccess = true;
           this.alertDanger = false;
+          this.serverNotification = resp.data.status;
+          this.alertSuccess = true;
 
-          this.jwt = data.token;
-          this.userID = data.data.user._id;
-          console.log(this.jwt);
+          this.jwt = resp.data.token;
+          this.userID = resp.data.data.user._id;
           window.setTimeout(() => {
-            location.assign(`/search`);
+            location.assign(`/`);
           }, 1);
         })
         .catch((error) => {
-          // console.log("error", error);
+          console.log("error", error);
+          this.alertSuccess = false;
           this.serverNotification = error.response.data.message;
           this.alertDanger = true;
-          this.alertSuccess = false;
         });
     },
   },

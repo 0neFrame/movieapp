@@ -168,8 +168,6 @@ export default {
         id: localStorage.userID,
       })
       .then((resp) => {
-        console.log(resp);
-        // console.log(resp.data.data.doc);
         this.getMe = resp.data.data.doc;
       })
       .catch((error) => {
@@ -185,16 +183,12 @@ export default {
           email: this.email,
         })
         .then((resp) => {
-          console.log(resp);
-
           this.alertDanger = false;
           this.serverNotification = resp.data.status;
           this.alertSuccess = true;
         })
         .catch((error) => {
           console.log(error);
-          console.log(error.response.data);
-          console.log(error.response.data.message);
 
           if (error.response.data.error.codeName === "DuplicateKey") {
             this.serverNotification = "email is busy";
@@ -234,15 +228,11 @@ export default {
 
     async tfauth() {
       await axios
-        .post("api/v1/users/tfauth", {
+        .post(`api/v1/users/tfauth`, {
           email: this.emailDel,
           password: this.passwordDel,
         })
         .then((resp) => {
-          console.log("resp", resp);
-          console.log(resp.data);
-          console.log(resp.data.base32secret);
-          console.log(resp.data.data_url);
           this.b32secret = resp.data.base32secret;
           this.urlQRCode = resp.data.data_url;
           this.formQRCode = true;
@@ -263,13 +253,11 @@ export default {
           codeQrcode: this.codeQRCode,
         })
         .then((resp) => {
-          console.log("res", resp);
           this.serverNotification = resp.data.status;
           this.alertSuccess = true;
         })
         .catch((error) => {
           console.log(error);
-          console.log(error.response.data.message);
           this.serverNotification = error.response.data.message;
           this.alertDanger = true;
         });

@@ -31,22 +31,18 @@ const routes = [
     component: login,
   },
   {
-    // path: "/user/:userId/search",
     path: "/search",
     name: "search",
     component: search,
   },
-  // { path: "/user/:userId/profile", name: "profile", component: profile },
   { path: "/profile", name: "profile", component: profile },
   { path: "/welcome/:userId", name: "welcome", component: welcome },
   {
-    // path: "/user/:userId/movies",
     path: "/:userId/movies",
     name: "movies",
     component: movies,
   },
   {
-    // path: "/user/:userId/movies/:movieId/review",
     path: "/:userId/movies/:movieId/review",
     name: "review",
     component: review,

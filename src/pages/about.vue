@@ -10,11 +10,6 @@
           users.
         </h5>
       </div>
-      <div>
-        <h1>
-          <hr />
-        </h1>
-      </div>
     </div>
   </div>
 </template>

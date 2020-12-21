@@ -37,18 +37,12 @@ export default {
         userID: this.$route.params.userId,
       })
       .then((resp) => {
-        console.log("resp", resp);
-        // this.serverNotification = resp.data.status;
-        // this.alertSuccess = true;
-        // this.alertDanger = false;
-
         this.jwt = resp.data.token;
         this.userID = resp.data.data.user._id;
         this.userData = resp.data.data.user;
         this.provider = resp.data.data.user.provider;
-        // console.log("userData", this.userData);
         window.setTimeout(() => {
-          location.assign(`/search`);
+          location.assign(`/`);
         }, 2000);
       })
       .catch((error) => {

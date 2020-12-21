@@ -105,7 +105,6 @@ export default {
       .get(`api/v1/movies/${this.$route.params.movieId}`)
       .then((resp) => {
         let doc = resp.data.data.doc;
-        console.log(doc);
         this.movieData = doc;
       })
       .catch((error) => {
@@ -119,7 +118,6 @@ export default {
       .then((resp) => {
         let doc = resp.data.doc;
         this.reviewData = doc[0];
-        console.log("reviewData: ", resp);
       })
       .catch((error) => {
         console.log(error);
@@ -137,7 +135,6 @@ export default {
         .then((resp) => {
           let doc = resp.data.data.doc;
           this.reviewData = doc;
-          console.log(doc);
         })
         .catch((error) => {
           console.log(error);
@@ -166,6 +163,7 @@ export default {
 
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Kufam:ital,wght@0,400;0,700;1,900&display=swap");
+
 .text-title {
   font-family: "Kufam", cursive;
   font-size: 150%;

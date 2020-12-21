@@ -234,7 +234,6 @@ export default {
     };
   },
   // async mounted() {
-  //   axios.defaults.headers.common["Authorization"] = this.jwt;
   // },
   methods: {
     countDownChanged(dismissCountDown) {
@@ -243,7 +242,7 @@ export default {
 
     async addMovie() {
       await axios
-        .post("api/v1/movies", {
+        .post(`api/v1/movies`, {
           arrUserID: localStorage.userID,
           poster: this.movieValue.Poster,
           title: this.movieValue.Title,
@@ -253,21 +252,16 @@ export default {
         })
         .then((resp) => {
           console.log(resp);
-          let data = resp.data;
           this.serverNotification = "movie added to COLLECTION";
           this.alertSuccess = true;
           this.alertDanger = false;
 
-          this.movieValue = data;
+          this.movieValue = resp.data;
           this.clickBtn = false;
-          // console.log(
-          //   "this.movieValue.data.doc._id:",
-          //   this.movieValue.data.doc._id
-          // );
         })
         .catch((error) => {
           console.log(error);
-          console.log(error.response);
+          // console.log(error.response);
           if (error.response.data.error.keyPattern.id === 1) {
             this.serverNotification = "this movie in COLLECTION";
             this.alertDanger = true;
@@ -285,8 +279,6 @@ export default {
         })
         .then((resp) => {
           console.log("reviews", resp);
-          // console.log("user:", localStorage.userID);
-          // console.log("movie:", this.movieValue.data.docs._id);
         })
         .catch((error) => {
           console.log(error);
@@ -295,13 +287,12 @@ export default {
 
     async searchMovie() {
       await axios
-        .post("search", {
+        .post(`api/v1/search`, {
           t: this.titles,
           y: this.years,
         })
         .then((resp) => {
-          let data = resp.data;
-          if (data.Error) {
+          if (resp.data.Error) {
             this.serverNotification = resp.data.Error;
             this.alertDanger = true;
           } else {
@@ -328,16 +319,12 @@ export default {
       this.alertSuccess = false;
       this.dismissCountDown = this.dismissSecs;
       this.movieValue = [];
-      // console.log(`value: ${this.movieValue.Title}, ${this.movieValue.Year}`);
-      // console.log(`response: ${this.movieValue.Response}`);
       do {
         await axios
-          .post("search/r", {
+          .post(`api/v1/search/r`, {
             i: `tt${Math.floor(Math.random() * 10000000 + 1)}`,
           })
           .then((resp) => {
-            // console.log(`frontend post: ${resp.data.Title}, ${resp.data.Year}`);
-            // console.log(`response: ${this.movieValue.Response}`);
             this.movieValue = resp.data;
             if (this.movieValue.Response === "True") this.dismissCountDown = 0;
           })

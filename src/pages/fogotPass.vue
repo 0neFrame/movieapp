@@ -5,17 +5,6 @@
         <h1 class="media-body user-select-none">Reset Password</h1>
         <hr />
         <div class="row justify-content-center media-body">
-          <!-- <div class="form-group">
-            <label for="exampleEmail1">email address</label>
-            <input
-              v-model.trim="email"
-              placeholder="example@gmail.com"
-              type="email"
-              class="form-control justify-content-center text-center"
-              id="email"
-              aria-describedby="emailHelp"
-            />
-          </div> -->
           <div class="form-group">
             <label class="user-select-none">new password</label>
             <input
@@ -33,17 +22,6 @@
               id="passwordConfirm"
             />
           </div>
-          <!-- <div class="input-group row justify-content-center">
-            <div class="input-group-prepend">
-              <span class="input-group-text">your name</span>
-            </div>
-            <input
-              v-model="name"
-              type="text"
-              placeholder="Your name"
-              class="form-control col-sm-3 text-center"
-            />
-          </div> -->
         </div>
       </div>
     </form>

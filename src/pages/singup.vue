@@ -78,7 +78,7 @@ export default {
   methods: {
     async singUp() {
       await axios
-        .post("api/v1/users/singup", {
+        .post(`api/v1/users/singup`, {
           name: this.name,
           email: this.email,
           password: this.password,
@@ -88,9 +88,8 @@ export default {
           console.log(resp);
           this.jwt = resp.data.token;
           this.userID = resp.data.data.user._id;
-          // console.log(this.jwt);
           window.setTimeout(() => {
-            location.assign(`/search`);
+            location.assign(`/`);
           }, 1);
         })
         .catch((error) => {

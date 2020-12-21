@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
-const factory = require("../controllers/handlerFactory");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/AppError");
+const factory = require("../controllers/handlerFactory");
 const User = require("../models/userModel");
 
 const speakeasy = require("speakeasy");
@@ -58,7 +58,6 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-// exports.getUser = factory.getOne(User, { path: "reviews" });
 exports.getUser = factory.getOne(User);
 exports.getAllUsers = factory.getAll(User);
 exports.createUser = factory.createOne(User);
